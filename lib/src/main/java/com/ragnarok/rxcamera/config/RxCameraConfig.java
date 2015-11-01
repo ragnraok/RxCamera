@@ -8,15 +8,17 @@ import android.graphics.Point;
  */
 public class RxCameraConfig {
 
+    public static Point DEFAULT_PREFER_PREVIEW_SIZE = new Point(320, 240);
+
     public boolean isFaceCamera = false;
 
     public int currentCameraId = -1;
 
     public Point preferPreviewSize = null;
 
-    public int previewFrameRate = -1;
+    public int preferPreviewFrameRate = -1;
 
-    public int previewForamt = -1;
+    public int previewFormat = -1;
 
     public int displayOrientation = -1;
 

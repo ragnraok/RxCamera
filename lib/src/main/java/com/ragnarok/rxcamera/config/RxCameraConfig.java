@@ -23,4 +23,19 @@ public class RxCameraConfig {
     public int displayOrientation = -1;
 
     public boolean isAutoFocus = false;
+
+    public int previewBufferSize = -1;
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder("RxCameraConfig ");
+        result.append(String.format("isFaceCamera: %b, currentCameraId: %d, ", isFaceCamera, currentCameraId));
+        result.append(String.format("preferPreviewSize: %s", preferPreviewSize));
+        result.append(String.format("preferPreviewFrameRate: %d, ", preferPreviewFrameRate));
+        result.append(String.format("previewFormat: %d, ", previewFormat));
+        result.append(String.format("displayOrientation: %d, ", displayOrientation));
+        result.append(String.format("isAutoFocus: %b", isAutoFocus));
+        result.append(String.format("previewBufferSize: %d", previewBufferSize));
+        return result.toString();
+    }
 }

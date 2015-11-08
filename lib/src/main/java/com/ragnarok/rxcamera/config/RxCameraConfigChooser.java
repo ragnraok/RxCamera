@@ -36,11 +36,12 @@ public class RxCameraConfigChooser {
         configResult.preferPreviewSize = size;
     }
 
-    public void setPreferPreviewFrameRate(int frameRate) {
-        if (frameRate <= 0) {
+    public void setPreferPreviewFrameRate(int minFrameRate, int maxFrameRate) {
+        if (minFrameRate <= 0 || maxFrameRate <= 0 || maxFrameRate < minFrameRate) {
             return;
         }
-        configResult.preferPreviewFrameRate = frameRate;
+        configResult.minPreferPreviewFrameRate = minFrameRate;
+        configResult.maxPreferPreviewFrameRate = maxFrameRate;
     }
 
     public void setPreviewFormat(int previewFormat) {

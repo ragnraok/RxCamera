@@ -16,7 +16,9 @@ public class RxCameraConfig {
 
     public Point preferPreviewSize = null;
 
-    public int preferPreviewFrameRate = -1;
+    public int minPreferPreviewFrameRate = -1;
+
+    public int maxPreferPreviewFrameRate = -1;
 
     public int previewFormat = -1;
 
@@ -31,7 +33,7 @@ public class RxCameraConfig {
         StringBuilder result = new StringBuilder("RxCameraConfig ");
         result.append(String.format("isFaceCamera: %b, currentCameraId: %d, ", isFaceCamera, currentCameraId));
         result.append(String.format("preferPreviewSize: %s", preferPreviewSize));
-        result.append(String.format("preferPreviewFrameRate: %d, ", preferPreviewFrameRate));
+        result.append(String.format("minPreferPreviewFrameRate: %d, maxPreferPreviewFrameRate: %d", minPreferPreviewFrameRate, maxPreferPreviewFrameRate));
         result.append(String.format("previewFormat: %d, ", previewFormat));
         result.append(String.format("displayOrientation: %d, ", displayOrientation));
         result.append(String.format("isAutoFocus: %b", isAutoFocus));

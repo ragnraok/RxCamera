@@ -1,15 +1,21 @@
 package com.ragnarok.rxcamera.config;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
+
+import java.util.List;
 
 /**
  * Created by ragnarok on 15/11/1.
  * some utilities for retrieve system camera config
  */
 public class CameraUtil {
+
+    private static final String TAG = "RxCamera.CameraUtil";
 
     private static int frontCameraId = -1;
     private static int backCameraId = -1;
@@ -74,5 +80,54 @@ public class CameraUtil {
             result = (cameraInfo.orientation - degrees + 360) % 360;
         }
         return result;
+    }
+
+    public static int[] findClosestFpsRange(Camera camera, int minFrameRate, int maxFrameRate) {
+        minFrameRate *= 1000;
+        maxFrameRate *= 1000;
+        Camera.Parameters parameters = camera.getParameters();
+        int minIndex = 0;
+        int minDiff = Integer.MAX_VALUE;
+        List<int[]> rangeList = parameters.getSupportedPreviewFpsRange();
+        Log.d(TAG, "support preview fps range list: " + rangeList);
+        for (int i = 0; i < rangeList.size(); i++) {
+            int[] fpsRange = rangeList.get(i);
+            if (fpsRange.length != 2) {
+                continue;
+            }
+            int minFps = fpsRange[0] / 1000;
+            int maxFps = fpsRange[1] / 1000;
+            int diff = Math.abs(minFps - minFrameRate) + Math.abs(maxFps - maxFrameRate);
+            if (diff < minDiff) {
+                minDiff = diff;
+                minIndex = i;
+            }
+        }
+        int[] result = rangeList.get(minIndex);
+        return result;
+    }
+
+    public static Camera.Size findClosetPreviewSize(Camera camera, Point preferSize) {
+        int preferX = preferSize.x;
+        int preferY = preferSize.y;
+        Camera.Parameters parameters = camera.getParameters();
+        List<Camera.Size> allSupportSizes = parameters.getSupportedPreviewSizes();
+        Log.d(TAG, "all support preview size: " + allSupportSizes);
+        int minDiff = Integer.MAX_VALUE;
+        int index = 0;
+        for (int i = 0; i < allSupportSizes.size(); i++) {
+            Camera.Size size = allSupportSizes.get(i);
+            int x = size.width;
+            int y = size.height;
+
+            int diff = Math.abs(x - preferX) + Math.abs(y - preferY);
+            if (diff < minDiff) {
+                minDiff = diff;
+                index = i;
+            }
+        }
+
+        Camera.Size size = allSupportSizes.get(index);
+        return size;
     }
 }

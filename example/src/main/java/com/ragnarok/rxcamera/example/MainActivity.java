@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.Button;
 
 import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.config.RxCameraConfig;
@@ -22,6 +23,10 @@ public class MainActivity extends AppCompatActivity implements TextureView.Surfa
     private static final String TAG = "Example.MainActivity";
 
     private TextureView textureView;
+    private Button openCameraBtn;
+    private Button closeCameraBtn;
+
+    private RxCamera camera;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,16 +35,32 @@ public class MainActivity extends AppCompatActivity implements TextureView.Surfa
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+////                        .setAction("Action", null).show();
+//                openCamera();
+//            }
+//        });
+
         textureView = (TextureView) findViewById(R.id.preview_surface);
         textureView.setSurfaceTextureListener(this);
+        openCameraBtn = (Button) findViewById(R.id.open_camera);
+        closeCameraBtn = (Button) findViewById(R.id.close_camera);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        openCameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
+            public void onClick(View v) {
                 openCamera();
+            }
+        });
+
+        closeCameraBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                camera.closeCamera();
             }
         });
     }
@@ -64,8 +85,9 @@ public class MainActivity extends AppCompatActivity implements TextureView.Surfa
             @Override
             public void onNext(RxCamera rxCamera) {
                 Log.d(TAG, "open camera success: " + rxCamera.toString());
-                rxCamera.bindSurfaceTexture(textureView.getSurfaceTexture());
-                rxCamera.startPreview();
+                camera = rxCamera;
+                camera.bindSurfaceTexture(textureView.getSurfaceTexture());
+                camera.startPreview();
             }
         });
     }

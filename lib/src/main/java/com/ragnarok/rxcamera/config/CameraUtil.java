@@ -89,7 +89,7 @@ public class CameraUtil {
         int minIndex = 0;
         int minDiff = Integer.MAX_VALUE;
         List<int[]> rangeList = parameters.getSupportedPreviewFpsRange();
-        Log.d(TAG, "support preview fps range list: " + rangeList);
+        Log.d(TAG, "support preview fps range list: " + dumpFpsRangeList(rangeList));
         for (int i = 0; i < rangeList.size(); i++) {
             int[] fpsRange = rangeList.get(i);
             if (fpsRange.length != 2) {
@@ -107,12 +107,23 @@ public class CameraUtil {
         return result;
     }
 
+    private static String dumpFpsRangeList(List<int[]> rangeList) {
+        String result = "";
+        for (int[] range : rangeList) {
+            if (range.length != 2) {
+                continue;
+            }
+            result += "(" + range[0] + "," + range[1] + ") ";
+        }
+        return result;
+    }
+
     public static Camera.Size findClosetPreviewSize(Camera camera, Point preferSize) {
         int preferX = preferSize.x;
         int preferY = preferSize.y;
         Camera.Parameters parameters = camera.getParameters();
         List<Camera.Size> allSupportSizes = parameters.getSupportedPreviewSizes();
-        Log.d(TAG, "all support preview size: " + allSupportSizes);
+        Log.d(TAG, "all support preview size: " + dumpPreviewSizeList(allSupportSizes));
         int minDiff = Integer.MAX_VALUE;
         int index = 0;
         for (int i = 0; i < allSupportSizes.size(); i++) {
@@ -129,5 +140,13 @@ public class CameraUtil {
 
         Camera.Size size = allSupportSizes.get(index);
         return size;
+    }
+
+    private static String dumpPreviewSizeList(List<Camera.Size> sizes) {
+        String result = "";
+        for (Camera.Size size : sizes) {
+            result += "(" + size.width + "," + size.height + ") ";
+        }
+        return result;
     }
 }

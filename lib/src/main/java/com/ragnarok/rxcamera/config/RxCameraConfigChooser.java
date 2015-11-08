@@ -63,6 +63,11 @@ public class RxCameraConfigChooser {
         return this;
     }
 
+    public RxCameraConfigChooser setHandleSurfaceEvent(boolean isHandle) {
+        configResult.isHandleSurfaceEvent = isHandle;
+        return this;
+    }
+
     private RxCameraConfigChooser setProperConfigVal() {
         if (configResult.currentCameraId == -1) {
             if (configResult.isFaceCamera) {
@@ -76,6 +81,7 @@ public class RxCameraConfigChooser {
         }
         return this;
     }
+
 
     public RxCameraConfig get() {
         setProperConfigVal();

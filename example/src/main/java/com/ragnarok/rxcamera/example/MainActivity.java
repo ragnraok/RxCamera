@@ -18,7 +18,7 @@ import com.ragnarok.rxcamera.config.RxCameraConfigChooser;
 
 import rx.Subscriber;
 
-public class MainActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Example.MainActivity";
 
@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements TextureView.Surfa
 //        });
 
         textureView = (TextureView) findViewById(R.id.preview_surface);
-        textureView.setSurfaceTextureListener(this);
         openCameraBtn = (Button) findViewById(R.id.open_camera);
         closeCameraBtn = (Button) findViewById(R.id.close_camera);
 
@@ -70,7 +69,10 @@ public class MainActivity extends AppCompatActivity implements TextureView.Surfa
                 useBackCamera().
                 setAutoFocus(true).
                 setPreferPreviewFrameRate(15, 30).
-                setPreferPreviewSize(new Point(640, 480)).get();
+                setPreferPreviewSize(new Point(640, 480)).
+                setHandleSurfaceEvent(true).
+                get();
+        Log.d(TAG, "config: " + config);
         RxCamera.open(this, config).subscribe(new Subscriber<RxCamera>() {
             @Override
             public void onCompleted() {
@@ -86,30 +88,10 @@ public class MainActivity extends AppCompatActivity implements TextureView.Surfa
             public void onNext(RxCamera rxCamera) {
                 Log.d(TAG, "open camera success: " + rxCamera.toString());
                 camera = rxCamera;
-                camera.bindSurfaceTexture(textureView.getSurfaceTexture());
+                camera.bindTexture(textureView);
                 camera.startPreview();
             }
         });
     }
 
-    @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        Log.d(TAG, "onSurfaceTextureAvailable");
-    }
-
-    @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-        Log.d(TAG, "onSurfaceTextureSizeChanged");
-    }
-
-    @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        Log.d(TAG, "onSurfaceTextureDestroyed");
-        return false;
-    }
-
-    @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
-    }
 }

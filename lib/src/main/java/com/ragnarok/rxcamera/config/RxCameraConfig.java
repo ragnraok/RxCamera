@@ -28,16 +28,19 @@ public class RxCameraConfig {
 
     public int previewBufferSize = -1;
 
+    public boolean isHandleSurfaceEvent = false;
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("RxCameraConfig ");
         result.append(String.format("isFaceCamera: %b, currentCameraId: %d, ", isFaceCamera, currentCameraId));
-        result.append(String.format("preferPreviewSize: %s", preferPreviewSize));
-        result.append(String.format("minPreferPreviewFrameRate: %d, maxPreferPreviewFrameRate: %d", minPreferPreviewFrameRate, maxPreferPreviewFrameRate));
+        result.append(String.format("preferPreviewSize: %s, ", preferPreviewSize));
+        result.append(String.format("minPreferPreviewFrameRate: %d, maxPreferPreviewFrameRate: %d, ", minPreferPreviewFrameRate, maxPreferPreviewFrameRate));
         result.append(String.format("previewFormat: %d, ", previewFormat));
         result.append(String.format("displayOrientation: %d, ", displayOrientation));
         result.append(String.format("isAutoFocus: %b", isAutoFocus));
-        result.append(String.format("previewBufferSize: %d", previewBufferSize));
+        result.append(String.format("previewBufferSize: %d, ", previewBufferSize));
+        result.append(String.format("isHandleSurfaceEvent: %b", isHandleSurfaceEvent));
         return result.toString();
     }
 }

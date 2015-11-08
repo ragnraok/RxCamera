@@ -5,23 +5,24 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.TextureView;
 
 import com.ragnarok.rxcamera.config.CameraUtil;
 import com.ragnarok.rxcamera.config.RxCameraConfig;
 import com.ragnarok.rxcamera.error.OpenCameraExecption;
 import com.ragnarok.rxcamera.error.OpenCameraFailedReason;
+import com.ragnarok.rxcamera.listeners.SurfaceCallback;
 
-import java.io.IOException;
 import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Func1;
 
 /**
  * Created by ragnarok on 15/10/25.
  */
-public class RxCamera {
+public class RxCamera implements SurfaceCallback.SurfaceListener {
 
     private static final String TAG = "RxCamera";
 
@@ -36,6 +37,14 @@ public class RxCamera {
     private OpenCameraFailedReason openCameraFailedReason;
 
     private boolean isBindSurface = false;
+
+    private SurfaceView bindSurfaceView;
+    private TextureView bindTextureView;
+
+    private SurfaceCallback surfaceCallback = new SurfaceCallback();
+
+    private boolean isSurfaceAvailable = false;
+    private boolean isNeedStartPreviewLater = false;
 
     public static Observable<RxCamera> open(final Context context, final RxCameraConfig config) {
         return Observable.create(new Observable.OnSubscribe<RxCamera>() {
@@ -70,14 +79,21 @@ public class RxCamera {
 
     private RxCamera(Context context) {
         this.context = context;
+        this.surfaceCallback.setSurfaceListener(this);
     }
 
-    public boolean bindSurface(SurfaceHolder surfaceHolder) {
-        if (camera == null) {
+    public boolean bindSurface(SurfaceView surfaceView) {
+        if (camera == null || isBindSurface || surfaceView == null) {
             return false;
         }
         try {
-            camera.setPreviewDisplay(surfaceHolder);
+            bindSurfaceView = surfaceView;
+            if (cameraConfig.isHandleSurfaceEvent) {
+                bindSurfaceView.getHolder().addCallback(surfaceCallback);
+            }
+            if (surfaceView.getHolder() != null) {
+                camera.setPreviewDisplay(surfaceView.getHolder());
+            }
             isBindSurface = true;
         } catch (Exception e) {
             Log.e(TAG, "bindSurface failed: " + e.getMessage());
@@ -86,12 +102,18 @@ public class RxCamera {
         return true;
     }
 
-    public boolean bindSurfaceTexture(SurfaceTexture surfaceTexture) {
-        if (camera == null) {
+    public boolean bindTexture(TextureView textureView) {
+        if (camera == null || isBindSurface || textureView == null) {
             return false;
         }
         try {
-            camera.setPreviewTexture(surfaceTexture);
+            bindTextureView = textureView;
+            if (cameraConfig.isHandleSurfaceEvent) {
+                bindTextureView.setSurfaceTextureListener(surfaceCallback);
+            }
+            if (bindTextureView.getSurfaceTexture() != null) {
+                camera.setPreviewTexture(bindTextureView.getSurfaceTexture());
+            }
             isBindSurface = true;
         } catch (Exception e) {
             Log.e(TAG, "bindSurfaceTexture failed: " + e.getMessage());
@@ -105,6 +127,13 @@ public class RxCamera {
             return false;
         }
         try {
+            if (bindTextureView != null && bindTextureView.isAvailable()) {
+                isSurfaceAvailable = true;
+            }
+            if (!isSurfaceAvailable && cameraConfig.isHandleSurfaceEvent) {
+                isNeedStartPreviewLater = true;
+                return true;
+            }
             camera.startPreview();
         } catch (Exception e) {
             Log.e(TAG, "start preview failed: " + e.getMessage());
@@ -120,11 +149,22 @@ public class RxCamera {
         try {
             camera.setPreviewCallback(null);
             camera.release();
+            isBindSurface = false;
+            isNeedStartPreviewLater = false;
+            isSurfaceAvailable = false;
         } catch (Exception e) {
             Log.e(TAG, "close camera failed: " + e.getMessage());
             return false;
         }
         return true;
+    }
+
+    public Camera getNativeCamera() {
+        return camera;
+    }
+
+    public RxCameraConfig getCameraConfig() {
+        return cameraConfig;
     }
 
     private boolean openCamera() {
@@ -229,19 +269,20 @@ public class RxCamera {
     }
 
 
+    @Override
+    public void onAvailable() {
+        if (isNeedStartPreviewLater) {
+            try {
+                camera.startPreview();
+            } catch (Exception e) {
+                Log.e(TAG, "onAvailable, start preview failed");
+            }
+        }
+    }
 
-    public static void test() {
-        // open -> bindSurface -> setPreviewCallback(optional) -> startPreview
-//        RxCamera.open(new RxCameraConfig()).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
-//            @Override
-//            public Observable<RxCamera> call(final RxCamera rxCamera) {
-//                return Observable.create(new Observable.OnSubscribe<RxCamera>() {
-//                    @Override
-//                    public void call(Subscriber<? super RxCamera> subscriber) {
-//                        rxCamera.bindSurface(null);
-//                    }
-//                });
-//            }
-//        });
+    @Override
+    public void onDestroy() {
+        isSurfaceAvailable = false;
+        closeCamera();
     }
 }

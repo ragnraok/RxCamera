@@ -12,6 +12,7 @@ import com.ragnarok.rxcamera.error.OpenCameraExecption;
 import com.ragnarok.rxcamera.error.OpenCameraFailedReason;
 
 import java.io.IOException;
+import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -41,6 +42,7 @@ public class RxCamera {
             @Override
             public void call(Subscriber<? super RxCamera> subscriber) {
                 RxCamera rxCamera = new RxCamera(context);
+                rxCamera.cameraConfig = config;
                 if (rxCamera.openCamera()) {
                     subscriber.onNext(rxCamera);
                 } else {
@@ -70,7 +72,7 @@ public class RxCamera {
         this.context = context;
     }
 
-    private boolean bindSurface(SurfaceHolder surfaceHolder) {
+    public boolean bindSurface(SurfaceHolder surfaceHolder) {
         if (camera == null) {
             return false;
         }
@@ -84,7 +86,7 @@ public class RxCamera {
         return true;
     }
 
-    private boolean bindSurfaceTexture(SurfaceTexture surfaceTexture) {
+    public boolean bindSurfaceTexture(SurfaceTexture surfaceTexture) {
         if (camera == null) {
             return false;
         }
@@ -182,6 +184,22 @@ public class RxCamera {
             } catch (Exception e) {
                 openCameraFailedReason = OpenCameraFailedReason.SET_PREVIEW_FORMAT_FAILED;
                 Log.e(TAG, "set preview format failed: " + e.getMessage());
+                return false;
+            }
+        }
+
+        // set auto focus
+        if (cameraConfig.isAutoFocus) {
+            try {
+                List<String> focusModes = parameters.getSupportedFocusModes();
+                if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+                } else if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
+                    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "set auto focus failed: " + e.getMessage());
+                openCameraFailedReason = OpenCameraFailedReason.SET_AUTO_FOCUS_FAILED;
                 return false;
             }
         }

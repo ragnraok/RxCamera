@@ -19,44 +19,51 @@ public class RxCameraConfigChooser {
         return new RxCameraConfigChooser();
     }
 
-    public void useFrontCamera() {
+    public RxCameraConfigChooser useFrontCamera() {
         configResult.isFaceCamera = true;
         configResult.currentCameraId = CameraUtil.getFrontCameraId();
+        return this;
     }
 
-    public void useBackCamera() {
+    public RxCameraConfigChooser useBackCamera() {
         configResult.isFaceCamera = false;
         configResult.currentCameraId = CameraUtil.getBackCameraId();
+        return this;
     }
 
-    public void setPreferPreviewSize(Point size) {
+    public RxCameraConfigChooser setPreferPreviewSize(Point size) {
         if (size == null) {
-            return;
+            return this;
         }
         configResult.preferPreviewSize = size;
+        return this;
     }
 
-    public void setPreferPreviewFrameRate(int minFrameRate, int maxFrameRate) {
+    public RxCameraConfigChooser setPreferPreviewFrameRate(int minFrameRate, int maxFrameRate) {
         if (minFrameRate <= 0 || maxFrameRate <= 0 || maxFrameRate < minFrameRate) {
-            return;
+            return this;
         }
         configResult.minPreferPreviewFrameRate = minFrameRate;
         configResult.maxPreferPreviewFrameRate = maxFrameRate;
+        return this;
     }
 
-    public void setPreviewFormat(int previewFormat) {
+    public RxCameraConfigChooser setPreviewFormat(int previewFormat) {
         configResult.previewFormat = previewFormat;
+        return this;
     }
 
-    public void setDisplayOrientation(int displayOrientation) {
+    public RxCameraConfigChooser setDisplayOrientation(int displayOrientation) {
         configResult.displayOrientation = displayOrientation;
+        return this;
     }
 
-    public void setAutoFocus(boolean isAutoFocus) {
+    public RxCameraConfigChooser setAutoFocus(boolean isAutoFocus) {
         configResult.isAutoFocus = isAutoFocus;
+        return this;
     }
 
-    private void setProperConfigVal() {
+    private RxCameraConfigChooser setProperConfigVal() {
         if (configResult.currentCameraId == -1) {
             if (configResult.isFaceCamera) {
                 configResult.currentCameraId = CameraUtil.getFrontCameraId();
@@ -67,6 +74,7 @@ public class RxCameraConfigChooser {
         if (configResult.preferPreviewSize == null) {
             configResult.preferPreviewSize = RxCameraConfig.DEFAULT_PREFER_PREVIEW_SIZE;
         }
+        return this;
     }
 
     public RxCameraConfig get() {

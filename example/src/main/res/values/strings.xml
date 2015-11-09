@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">example</string>
+    <string name="app_name">RxCamera</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
 </resources>

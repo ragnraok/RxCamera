@@ -61,6 +61,14 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
         });
     }
 
+    public static Observable<RxCamera> startPreview(final RxCamera rxCamera, SurfaceHolder surfaceHolder) {
+        return null;
+    }
+
+    public static Observable<RxCamera> startPreview(RxCamera rxCamera, SurfaceTexture surfaceTexture) {
+        return null;
+    }
+
     public static Observable<RxCamera> openAndStartPreview(SurfaceHolder surfaceHolder) {
         return null;
     }
@@ -268,6 +276,9 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
         return true;
     }
 
+    private boolean installPreviewCallback() {
+        return false;
+    }
 
     @Override
     public void onAvailable() {
@@ -283,6 +294,5 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
     @Override
     public void onDestroy() {
         isSurfaceAvailable = false;
-        closeCamera();
     }
 }

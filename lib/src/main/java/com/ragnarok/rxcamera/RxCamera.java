@@ -12,12 +12,14 @@ import com.ragnarok.rxcamera.config.CameraUtil;
 import com.ragnarok.rxcamera.config.RxCameraConfig;
 import com.ragnarok.rxcamera.error.OpenCameraExecption;
 import com.ragnarok.rxcamera.error.OpenCameraFailedReason;
+import com.ragnarok.rxcamera.error.StartPreviewFailedException;
 import com.ragnarok.rxcamera.listeners.SurfaceCallback;
 
 import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 
 /**
  * Created by ragnarok on 15/10/25.
@@ -61,20 +63,44 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
         });
     }
 
-    public static Observable<RxCamera> startPreview(final RxCamera rxCamera, SurfaceHolder surfaceHolder) {
-        return null;
+    public static Observable<RxCamera> openAndStartPreview(Context context, RxCameraConfig config, final SurfaceView surfaceView) {
+        return open(context, config).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
+            @Override
+            public Observable<RxCamera> call(final RxCamera rxCamera) {
+                return Observable.create(new Observable.OnSubscribe<RxCamera>() {
+                    @Override
+                    public void call(Subscriber<? super RxCamera> subscriber) {
+                        rxCamera.bindSurface(surfaceView);
+                        boolean result = rxCamera.startPreviewInternal();
+                        if (result) {
+                            subscriber.onNext(rxCamera);
+                        } else {
+                            subscriber.onError(new StartPreviewFailedException());
+                        }
+                    }
+                });
+            }
+        });
     }
 
-    public static Observable<RxCamera> startPreview(RxCamera rxCamera, SurfaceTexture surfaceTexture) {
-        return null;
-    }
-
-    public static Observable<RxCamera> openAndStartPreview(SurfaceHolder surfaceHolder) {
-        return null;
-    }
-
-    public static Observable<RxCamera> openAndStartPreview(SurfaceTexture surfaceTexture) {
-        return null;
+    public static Observable<RxCamera> openAndStartPreview(Context context, RxCameraConfig config, final TextureView textureView) {
+        return open(context, config).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
+            @Override
+            public Observable<RxCamera> call(final RxCamera rxCamera) {
+                return Observable.create(new Observable.OnSubscribe<RxCamera>() {
+                    @Override
+                    public void call(Subscriber<? super RxCamera> subscriber) {
+                        rxCamera.bindTexture(textureView);
+                        boolean result = rxCamera.startPreviewInternal();
+                        if (result) {
+                            subscriber.onNext(rxCamera);
+                        } else {
+                            subscriber.onError(new StartPreviewFailedException());
+                        }
+                    }
+                });
+            }
+        });
     }
 
     public static Observable<RxCamera> openAndStartPreviewWithPreviewCallback(SurfaceHolder surfaceHolder) {
@@ -130,7 +156,17 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
         return true;
     }
 
-    public boolean startPreview() {
+    public Observable<Boolean> startPreview() {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                boolean result = startPreviewInternal();
+                subscriber.onNext(result);
+            }
+        });
+    }
+
+    private boolean startPreviewInternal() {
         if (camera == null || !isBindSurface) {
             return false;
         }

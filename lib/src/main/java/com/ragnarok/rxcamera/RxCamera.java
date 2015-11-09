@@ -10,6 +10,7 @@ import android.view.TextureView;
 
 import com.ragnarok.rxcamera.config.CameraUtil;
 import com.ragnarok.rxcamera.config.RxCameraConfig;
+import com.ragnarok.rxcamera.error.BindSurfaceFailedException;
 import com.ragnarok.rxcamera.error.OpenCameraExecption;
 import com.ragnarok.rxcamera.error.OpenCameraFailedReason;
 import com.ragnarok.rxcamera.error.StartPreviewFailedException;
@@ -70,12 +71,15 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
                 return Observable.create(new Observable.OnSubscribe<RxCamera>() {
                     @Override
                     public void call(Subscriber<? super RxCamera> subscriber) {
-                        rxCamera.bindSurface(surfaceView);
+                        boolean bindResult = rxCamera.bindSurface(surfaceView);
+                        if (!bindResult) {
+                            subscriber.onError(new BindSurfaceFailedException(rxCamera.bindSurfaceFailedMessage));
+                        }
                         boolean result = rxCamera.startPreviewInternal();
                         if (result) {
                             subscriber.onNext(rxCamera);
                         } else {
-                            subscriber.onError(new StartPreviewFailedException());
+                            subscriber.onError(new StartPreviewFailedException(rxCamera.previewFailedMessage));
                         }
                     }
                 });
@@ -90,12 +94,15 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
                 return Observable.create(new Observable.OnSubscribe<RxCamera>() {
                     @Override
                     public void call(Subscriber<? super RxCamera> subscriber) {
-                        rxCamera.bindTexture(textureView);
+                        boolean bindResult = rxCamera.bindTexture(textureView);
+                        if (!bindResult) {
+                            subscriber.onError(new BindSurfaceFailedException(rxCamera.bindSurfaceFailedMessage));
+                        }
                         boolean result = rxCamera.startPreviewInternal();
                         if (result) {
                             subscriber.onNext(rxCamera);
                         } else {
-                            subscriber.onError(new StartPreviewFailedException());
+                            subscriber.onError(new StartPreviewFailedException(rxCamera.previewFailedMessage));
                         }
                     }
                 });
@@ -116,6 +123,9 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
         this.surfaceCallback.setSurfaceListener(this);
     }
 
+    //TODO make bindSurface and bindTexture return Observable
+
+    private String bindSurfaceFailedMessage;
     public boolean bindSurface(SurfaceView surfaceView) {
         if (camera == null || isBindSurface || surfaceView == null) {
             return false;
@@ -130,6 +140,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
             }
             isBindSurface = true;
         } catch (Exception e) {
+            bindSurfaceFailedMessage = e.getMessage();
             Log.e(TAG, "bindSurface failed: " + e.getMessage());
             return false;
         }
@@ -150,6 +161,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
             }
             isBindSurface = true;
         } catch (Exception e) {
+            bindSurfaceFailedMessage = e.getMessage();
             Log.e(TAG, "bindSurfaceTexture failed: " + e.getMessage());
             return false;
         }
@@ -161,11 +173,16 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
                 boolean result = startPreviewInternal();
-                subscriber.onNext(result);
+                if (result) {
+                    subscriber.onNext(true);
+                } else {
+                    subscriber.onError(new StartPreviewFailedException(previewFailedMessage));
+                }
             }
         });
     }
 
+    private String previewFailedMessage;
     private boolean startPreviewInternal() {
         if (camera == null || !isBindSurface) {
             return false;
@@ -181,6 +198,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
             camera.startPreview();
         } catch (Exception e) {
             Log.e(TAG, "start preview failed: " + e.getMessage());
+            previewFailedMessage = e.getMessage();
             return false;
         }
         return true;

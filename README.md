@@ -12,25 +12,34 @@ RxCameraConfig config = RxCameraConfigChooser.obtain().
                 setHandleSurfaceEvent(true).
                 get();
 Log.d(TAG, "config: " + config);
-RxCamera.open(this, config).subscribe(new Subscriber<RxCamera>() {
-      @Override
-      public void onCompleted() {
-        
-      }
+RxCamera.open(this, config).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
+        @Override
+        public Observable<RxCamera> call(RxCamera rxCamera) {
+            camera = rxCamera;
+            return rxCamera.bindTexture(textureView);
+        }
+    }).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
+        @Override
+        public Observable<RxCamera> call(RxCamera rxCamera) {
+          return rxCamera.startPreview();
+        }
+    }).subscribe(new Subscriber<RxCamera>() {
+        @Override
+        public void onCompleted() {
+            Log.d(TAG, "onCompleted");
+        }
 
-      @Override
-      public void onError(Throwable e) {
-        Log.d(TAG, "open camera failed: " + e.getMessage());
-      }
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, "error: " + e.getMessage());
+        }
 
-      @Override
-      public void onNext(RxCamera rxCamera) {
-          Log.d(TAG, "open camera success: " + rxCamera.toString());
-          camera = rxCamera;
-          camera.bindTexture(textureView);
-          camera.startPreview();
-      }
-});
+        @Override
+        public void onNext(RxCamera rxCamera) {
+            Log.d(TAG, "success: " + rxCamera);
+        }
+    });
+}
 ```
 
 Still under heavily development

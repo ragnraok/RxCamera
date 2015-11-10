@@ -73,21 +73,48 @@ public class MainActivity extends AppCompatActivity {
                 setHandleSurfaceEvent(true).
                 get();
         Log.d(TAG, "config: " + config);
-        RxCamera.openAndStartPreview(this, config, textureView).subscribe(new Subscriber<RxCamera>() {
+//        RxCamera.openAndStartPreview(this, config, textureView).subscribe(new Subscriber<RxCamera>() {
+//            @Override
+//            public void onCompleted() {
+//
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//                Log.d(TAG, "open camera failed: " + e.getMessage());
+//            }
+//
+//            @Override
+//            public void onNext(RxCamera rxCamera) {
+//                camera = rxCamera;
+//                Log.d(TAG, "open camera success: " + rxCamera.toString());
+//            }
+//        });
+        RxCamera.open(this, config).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
+            @Override
+            public Observable<RxCamera> call(RxCamera rxCamera) {
+                camera = rxCamera;
+                return rxCamera.bindTexture(textureView);
+            }
+        }).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
+            @Override
+            public Observable<RxCamera> call(RxCamera rxCamera) {
+                return rxCamera.startPreview();
+            }
+        }).subscribe(new Subscriber<RxCamera>() {
             @Override
             public void onCompleted() {
-
+                Log.d(TAG, "onCompleted");
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.d(TAG, "open camera failed: " + e.getMessage());
+                Log.e(TAG, "error: " + e.getMessage());
             }
 
             @Override
             public void onNext(RxCamera rxCamera) {
-                camera = rxCamera;
-                Log.d(TAG, "open camera success: " + rxCamera.toString());
+                Log.d(TAG, "success: " + rxCamera);
             }
         });
     }

@@ -37,8 +37,6 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
 
     private Context context;
 
-    private OpenCameraFailedReason openCameraFailedReason;
-
     private boolean isBindSurface = false;
 
     private SurfaceView bindSurfaceView;
@@ -59,7 +57,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
                     subscriber.onNext(rxCamera);
                     subscriber.onCompleted();
                 } else {
-                    subscriber.onError(new OpenCameraExecption(rxCamera.openCameraFailedReason));
+                    subscriber.onError(new OpenCameraExecption(rxCamera.openCameraFailedReason, rxCamera.openCameraFailedCause));
                 }
             }
         });
@@ -115,7 +113,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
                     subscriber.onNext(RxCamera.this);
                     subscriber.onCompleted();
                 } else {
-                    subscriber.onError(new BindSurfaceFailedException(bindSurfaceFailedMessage));
+                    subscriber.onError(new BindSurfaceFailedException(bindSurfaceFailedMessage, bindSurfaceFailedCause));
                 }
             }
         });
@@ -130,7 +128,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
                     subscriber.onNext(RxCamera.this);
                     subscriber.onCompleted();
                 } else {
-                    subscriber.onError(new BindSurfaceFailedException(bindSurfaceFailedMessage));
+                    subscriber.onError(new BindSurfaceFailedException(bindSurfaceFailedMessage, bindSurfaceFailedCause));
                 }
             }
         });
@@ -146,7 +144,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
                     subscriber.onNext(RxCamera.this);
                     subscriber.onCompleted();
                 } else {
-                    subscriber.onError(new StartPreviewFailedException(previewFailedMessage));
+                    subscriber.onError(new StartPreviewFailedException(previewFailedMessage, previewFailedCause));
                 }
             }
         });
@@ -167,6 +165,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
     }
 
     private String bindSurfaceFailedMessage;
+    private Throwable bindSurfaceFailedCause;
     private boolean bindSurfaceInternal(SurfaceView surfaceView) {
         if (camera == null || isBindSurface || surfaceView == null) {
             return false;
@@ -182,6 +181,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
             isBindSurface = true;
         } catch (Exception e) {
             bindSurfaceFailedMessage = e.getMessage();
+            bindSurfaceFailedCause = e;
             Log.e(TAG, "bindSurface failed: " + e.getMessage());
             return false;
         }
@@ -203,6 +203,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
             isBindSurface = true;
         } catch (Exception e) {
             bindSurfaceFailedMessage = e.getMessage();
+            bindSurfaceFailedCause = e;
             Log.e(TAG, "bindSurfaceTexture failed: " + e.getMessage());
             return false;
         }
@@ -210,6 +211,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
     }
 
     private String previewFailedMessage;
+    private Throwable previewFailedCause;
     private boolean startPreviewInternal() {
         if (camera == null || !isBindSurface) {
             return false;
@@ -226,6 +228,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
         } catch (Exception e) {
             Log.e(TAG, "start preview failed: " + e.getMessage());
             previewFailedMessage = e.getMessage();
+            previewFailedCause = e;
             return false;
         }
         return true;
@@ -238,14 +241,24 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
         try {
             camera.setPreviewCallback(null);
             camera.release();
-            isBindSurface = false;
-            isNeedStartPreviewLater = false;
-            isSurfaceAvailable = false;
+            reset();
         } catch (Exception e) {
             Log.e(TAG, "close camera failed: " + e.getMessage());
             return false;
         }
         return true;
+    }
+
+    private void reset() {
+        isBindSurface = false;
+        isNeedStartPreviewLater = false;
+        isSurfaceAvailable = false;
+        openCameraFailedCause = null;
+        openCameraFailedReason = null;
+        previewFailedCause = null;
+        previewFailedMessage = null;
+        bindSurfaceFailedCause = null;
+        bindSurfaceFailedMessage = null;
     }
 
     public Camera getNativeCamera() {
@@ -256,7 +269,10 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
         return cameraConfig;
     }
 
+    private OpenCameraFailedReason openCameraFailedReason;
+    private Throwable openCameraFailedCause;
     private boolean openCamera() {
+        reset();
         if (cameraConfig == null) {
             openCameraFailedReason = OpenCameraFailedReason.PARAMETER_ERROR;
             return false;
@@ -266,6 +282,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
             this.camera = Camera.open(cameraConfig.currentCameraId);
         } catch (Exception e) {
             openCameraFailedReason = OpenCameraFailedReason.OPEN_FAILED;
+            openCameraFailedCause = e;
             Log.e(TAG, "open camera failed: " + e.getMessage());
             return false;
         }
@@ -275,6 +292,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
             parameters = camera.getParameters();
         } catch (Exception e) {
             openCameraFailedReason = OpenCameraFailedReason.GET_PARAMETER_FAILED;
+            openCameraFailedCause = e;
             Log.e(TAG, "get parameter failed: " + e.getMessage());
         }
 
@@ -290,6 +308,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
                 parameters.setPreviewFpsRange(range[0], range[1]);
             } catch (Exception e) {
                 openCameraFailedReason = OpenCameraFailedReason.SET_FPS_FAILED;
+                openCameraFailedCause = e;
                 Log.e(TAG, "set preview fps range failed: " + e.getMessage());
                 return false;
             }
@@ -301,6 +320,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
                 parameters.setPreviewSize(previewSize.width, previewSize.height);
             } catch (Exception e) {
                 openCameraFailedReason = OpenCameraFailedReason.SET_PREVIEW_SIZE_FAILED;
+                openCameraFailedCause = e;
                 Log.e(TAG, "set preview size failed: " + e.getMessage());
                 return false;
             }
@@ -312,6 +332,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
                 parameters.setPreviewFormat(cameraConfig.previewFormat);
             } catch (Exception e) {
                 openCameraFailedReason = OpenCameraFailedReason.SET_PREVIEW_FORMAT_FAILED;
+                openCameraFailedCause = e;
                 Log.e(TAG, "set preview format failed: " + e.getMessage());
                 return false;
             }
@@ -329,6 +350,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
             } catch (Exception e) {
                 Log.e(TAG, "set auto focus failed: " + e.getMessage());
                 openCameraFailedReason = OpenCameraFailedReason.SET_AUTO_FOCUS_FAILED;
+                openCameraFailedCause = e;
                 return false;
             }
         }
@@ -338,6 +360,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
             camera.setParameters(parameters);
         } catch (Exception e) {
             openCameraFailedReason = OpenCameraFailedReason.SET_PARAMETER_FAILED;
+            openCameraFailedCause = e;
             Log.e(TAG, "set final parameter failed: " + e.getMessage());
             return false;
         }
@@ -350,6 +373,7 @@ public class RxCamera implements SurfaceCallback.SurfaceListener {
             camera.setDisplayOrientation(cameraConfig.displayOrientation);
         } catch (Exception e) {
             openCameraFailedReason = OpenCameraFailedReason.SET_DISPLAY_ORIENTATION_FAILED;
+            openCameraFailedCause = e;
             Log.e(TAG, "open camera failed: " + e.getMessage());
             return false;
         }

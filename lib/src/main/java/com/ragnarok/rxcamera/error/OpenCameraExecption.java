@@ -7,9 +7,16 @@ package com.ragnarok.rxcamera.error;
 public class OpenCameraExecption extends Exception {
 
     private OpenCameraFailedReason reason;
+    private Throwable cause;
 
-    public OpenCameraExecption(OpenCameraFailedReason reason) {
+    public OpenCameraExecption(OpenCameraFailedReason reason, Throwable cause) {
         this.reason = reason;
+        this.cause = cause;
+    }
+
+    @Override
+    public Throwable getCause() {
+        return this.cause;
     }
 
     public OpenCameraFailedReason getReason() {
@@ -18,6 +25,6 @@ public class OpenCameraExecption extends Exception {
 
     @Override
     public String getMessage() {
-        return String.format("Open camera failed: %s", reason);
+        return String.format("Open camera failed: %s, cause: %s", reason, cause);
     }
 }

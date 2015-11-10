@@ -18,6 +18,7 @@ import com.ragnarok.rxcamera.config.RxCameraConfigChooser;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action1;
 import rx.functions.Func1;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,16 +38,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-////                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-////                        .setAction("Action", null).show();
-//                openCamera();
-//            }
-//        });
-
         textureView = (TextureView) findViewById(R.id.preview_surface);
         openCameraBtn = (Button) findViewById(R.id.open_camera);
         closeCameraBtn = (Button) findViewById(R.id.close_camera);
@@ -62,7 +53,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (camera != null) {
-                    camera.closeCamera();
+                    camera.closeCameraWithResult().subscribe(new Action1<Boolean>() {
+                        @Override
+                        public void call(Boolean aBoolean) {
+                            Log.d(TAG, "close camera finished, success: " + aBoolean);
+                        }
+                    });
                 }
             }
         });
@@ -77,25 +73,6 @@ public class MainActivity extends AppCompatActivity {
                 setHandleSurfaceEvent(true).
                 get();
         Log.d(TAG, "config: " + config);
-//        RxCamera.open(this, config).subscribe(new Subscriber<RxCamera>() {
-//            @Override
-//            public void onCompleted() {
-//
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                Log.d(TAG, "open camera failed: " + e.getMessage());
-//            }
-//
-//            @Override
-//            public void onNext(RxCamera rxCamera) {
-//                Log.d(TAG, "open camera success: " + rxCamera.toString());
-//                camera = rxCamera;
-//                camera.bindTexture(textureView);
-//                camera.startPreview();
-//            }
-//        });
         RxCamera.openAndStartPreview(this, config, textureView).subscribe(new Subscriber<RxCamera>() {
             @Override
             public void onCompleted() {
@@ -113,29 +90,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "open camera success: " + rxCamera.toString());
             }
         });
-//        RxCamera.open(this, config).flatMap(new Func1<RxCamera, Observable<Boolean>>() {
-//            @Override
-//            public Observable<Boolean> call(RxCamera rxCamera) {
-//                camera = rxCamera;
-//                rxCamera.bindTexture(textureView);
-//                return rxCamera.startPreview();
-//            }
-//        }).subscribe(new Subscriber<Boolean>() {
-//            @Override
-//            public void onCompleted() {
-//
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                Log.d(TAG, "startPreview failed: " + e.getMessage());
-//            }
-//
-//            @Override
-//            public void onNext(Boolean aBoolean) {
-//                Log.d(TAG, "startPreview result: " + aBoolean);
-//            }
-//        });
     }
 
 

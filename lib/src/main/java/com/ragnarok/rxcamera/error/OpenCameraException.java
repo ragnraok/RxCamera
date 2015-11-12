@@ -4,12 +4,12 @@ package com.ragnarok.rxcamera.error;
  * Created by ragnarok on 15/11/8.
  * throw this exception if open camera failed
  */
-public class OpenCameraExecption extends Exception {
+public class OpenCameraException extends Exception {
 
     private OpenCameraFailedReason reason;
     private Throwable cause;
 
-    public OpenCameraExecption(OpenCameraFailedReason reason, Throwable cause) {
+    public OpenCameraException(OpenCameraFailedReason reason, Throwable cause) {
         this.reason = reason;
         this.cause = cause;
     }

@@ -1,13 +1,10 @@
 package com.ragnarok.rxcamera;
 
 import android.content.Context;
-import android.graphics.SurfaceTexture;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 
 import com.ragnarok.rxcamera.config.RxCameraConfig;
-import com.ragnarok.rxcamera.error.StartPreviewFailedException;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -20,8 +17,6 @@ public class RxCamera  {
 
     private static final String TAG = "RxCamera";
 
-    private Context context;
-
     private RxCameraInternal cameraInternal = new RxCameraInternal();
 
     public static Observable<RxCamera> open(final Context context, final RxCameraConfig config) {
@@ -33,7 +28,7 @@ public class RxCamera  {
                     subscriber.onNext(rxCamera);
                     subscriber.onCompleted();
                 } else {
-                    subscriber.onError(rxCamera.cameraInternal.openCameraExecption());
+                    subscriber.onError(rxCamera.cameraInternal.openCameraException());
                 }
             }
         });
@@ -68,7 +63,6 @@ public class RxCamera  {
     }
 
     private RxCamera(Context context, RxCameraConfig config) {
-        this.context = context;
         this.cameraInternal = new RxCameraInternal();
         this.cameraInternal.setConfig(config);
         this.cameraInternal.setContext(context);
@@ -130,6 +124,10 @@ public class RxCamera  {
         });
     }
 
+    public RxCameraRequestBuilder request() {
+        return new RxCameraRequestBuilder(this);
+    }
+
     public boolean closeCamera() {
         return cameraInternal.closeCameraInternal();
     }
@@ -140,5 +138,9 @@ public class RxCamera  {
 
     public boolean isBindSurface() {
         return cameraInternal.isBindSurface();
+    }
+
+    public RxCameraConfig getConfig() {
+        return cameraInternal.getConfig();
     }
 }

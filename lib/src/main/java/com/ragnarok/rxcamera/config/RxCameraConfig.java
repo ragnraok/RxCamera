@@ -42,7 +42,8 @@ public class RxCameraConfig {
         result.append(String.format("displayOrientation: %d, ", displayOrientation));
         result.append(String.format("isAutoFocus: %b", isAutoFocus));
         result.append(String.format("previewBufferSize: %d, ", previewBufferSize));
-        result.append(String.format("isHandleSurfaceEvent: %b", isHandleSurfaceEvent));
+        result.append(String.format("isHandleSurfaceEvent: %b, ", isHandleSurfaceEvent));
+        result.append(String.format("cameraOrien: %d, ", cameraOrien));
         return result.toString();
     }
 }

@@ -1,6 +1,7 @@
 package com.ragnarok.rxcamera;
 
 import android.content.Context;
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -9,10 +10,9 @@ import android.view.TextureView;
 import com.ragnarok.rxcamera.config.CameraUtil;
 import com.ragnarok.rxcamera.config.RxCameraConfig;
 import com.ragnarok.rxcamera.error.BindSurfaceFailedException;
-import com.ragnarok.rxcamera.error.OpenCameraExecption;
+import com.ragnarok.rxcamera.error.OpenCameraException;
 import com.ragnarok.rxcamera.error.OpenCameraFailedReason;
 import com.ragnarok.rxcamera.error.StartPreviewFailedException;
-import com.ragnarok.rxcamera.SurfaceCallback;
 
 import java.util.List;
 
@@ -42,6 +42,8 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
 
     private boolean isSurfaceAvailable = false;
     private boolean isNeedStartPreviewLater = false;
+
+    private Camera.Size previewSize;
 
     public void setConfig(RxCameraConfig config) {
         this.cameraConfig = config;
@@ -102,7 +104,7 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
         // set preview size;
         if (cameraConfig.preferPreviewSize != null) {
             try {
-                Camera.Size previewSize = CameraUtil.findClosetPreviewSize(camera, cameraConfig.preferPreviewSize);
+                previewSize = CameraUtil.findClosetPreviewSize(camera, cameraConfig.preferPreviewSize);
                 parameters.setPreviewSize(previewSize.width, previewSize.height);
             } catch (Exception e) {
                 openCameraFailedReason = OpenCameraFailedReason.SET_PREVIEW_SIZE_FAILED;
@@ -167,8 +169,8 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
         return true;
     }
 
-    public OpenCameraExecption openCameraExecption() {
-        return new OpenCameraExecption(openCameraFailedReason, openCameraFailedCause);
+    public OpenCameraException openCameraException() {
+        return new OpenCameraException(openCameraFailedReason, openCameraFailedCause);
     }
 
     public boolean isBindSurface() {
@@ -180,7 +182,27 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
     }
 
     private boolean installPreviewCallback() {
+        if (isOpenCamera) {
+            int buffSize = cameraConfig.previewBufferSize;
+            if (cameraConfig.previewBufferSize == -1) {
+                buffSize = getPreviewBufferSizeFromParameter();
+            }
+        }
+
         return false;
+    }
+
+    private int getPreviewBufferSizeFromParameter() {
+        Log.d(TAG, "getPreviewBufferSizeFromParameter, previewFormat: " + camera.getParameters().getPreviewFormat() + ", " +
+                "previewSize: " + camera.getParameters().getPreviewSize() + ", bitsPerPixels: " +
+                ImageFormat.getBitsPerPixel(camera.getParameters().getPreviewFormat()));
+        if (camera.getParameters().getPreviewFormat() == ImageFormat.YV12) {
+            return 1;
+        } else {
+            return camera.getParameters().getPreviewSize().width *
+                    camera.getParameters().getPreviewSize().height *
+                    ImageFormat.getBitsPerPixel(camera.getParameters().getPreviewFormat()) / 8;
+        }
     }
 
     private String bindSurfaceFailedMessage;
@@ -274,6 +296,10 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
             return false;
         }
         return true;
+    }
+
+    public void installPreviewCallback(Camera.PreviewCallback previewCallback) {
+
     }
 
     @Override

@@ -69,6 +69,11 @@ public class RxCameraConfigChooser {
         return this;
     }
 
+    public RxCameraConfigChooser setPreviewBufferSize(int size) {
+        configResult.previewBufferSize = size;
+        return this;
+    }
+
     private RxCameraConfigChooser setProperConfigVal() {
         if (configResult.currentCameraId == -1) {
             if (configResult.isFaceCamera) {

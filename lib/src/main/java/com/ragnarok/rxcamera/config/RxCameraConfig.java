@@ -30,6 +30,8 @@ public class RxCameraConfig {
 
     public boolean isHandleSurfaceEvent = false;
 
+    public int cameraOrien = -1;
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("RxCameraConfig ");

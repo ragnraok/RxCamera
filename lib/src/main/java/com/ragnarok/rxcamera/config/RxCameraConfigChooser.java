@@ -1,6 +1,7 @@
 package com.ragnarok.rxcamera.config;
 
 import android.graphics.Point;
+import android.hardware.Camera;
 
 /**
  * Created by ragnarok on 15/11/1.
@@ -78,6 +79,11 @@ public class RxCameraConfigChooser {
         }
         if (configResult.preferPreviewSize == null) {
             configResult.preferPreviewSize = RxCameraConfig.DEFAULT_PREFER_PREVIEW_SIZE;
+        }
+
+        Camera.CameraInfo cameraInfo = CameraUtil.getCameraInfo(configResult.currentCameraId);
+        if (cameraInfo != null) {
+            configResult.cameraOrien = cameraInfo.orientation;
         }
         return this;
     }

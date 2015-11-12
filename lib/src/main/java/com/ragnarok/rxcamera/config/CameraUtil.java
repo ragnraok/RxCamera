@@ -42,6 +42,23 @@ public class CameraUtil {
         return frontCameraId;
     }
 
+    public static Camera.CameraInfo getCameraInfo(int id) {
+        if (id > 0 && id < getCameraNumber()) {
+            Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+            Camera.getCameraInfo(id, cameraInfo);
+            return cameraInfo;
+        }
+        return null;
+    }
+
+    public boolean hasFrontCamera() {
+        return getFrontCameraId() != -1;
+    }
+
+    public boolean hasBackCamera() {
+        return getBackCameraId() != -1;
+    }
+
     public static int getBackCameraId() {
         if (backCameraId == -1) {
             Camera.CameraInfo cameraInfo = new Camera.CameraInfo();

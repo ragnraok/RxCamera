@@ -20,6 +20,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -93,12 +94,14 @@ public class MainActivity extends AppCompatActivity {
         RxCamera.open(this, config).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
             @Override
             public Observable<RxCamera> call(RxCamera rxCamera) {
+                Log.d(TAG, "isopen: " + rxCamera.isOpenCamera());
                 camera = rxCamera;
                 return rxCamera.bindTexture(textureView);
             }
-        }).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
+        }).subscribeOn(Schedulers.io()).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
             @Override
             public Observable<RxCamera> call(RxCamera rxCamera) {
+                Log.d(TAG, "isbindsurface: " + rxCamera.isBindSurface());
                 return rxCamera.startPreview();
             }
         }).subscribe(new Subscriber<RxCamera>() {

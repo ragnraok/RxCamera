@@ -1,4 +1,4 @@
-package com.ragnarok.rxcamera.listeners;
+package com.ragnarok.rxcamera;
 
 import android.graphics.SurfaceTexture;
 import android.view.SurfaceHolder;
@@ -7,7 +7,7 @@ import android.view.TextureView;
 /**
  * Created by ragnarok on 15/11/8.
  */
-public class SurfaceCallback implements SurfaceHolder.Callback, TextureView.SurfaceTextureListener {
+/* package */ class SurfaceCallback implements SurfaceHolder.Callback, TextureView.SurfaceTextureListener {
 
     public interface SurfaceListener {
         void onAvailable();

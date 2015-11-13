@@ -14,13 +14,14 @@ import com.ragnarok.rxcamera.error.OpenCameraException;
 import com.ragnarok.rxcamera.error.OpenCameraFailedReason;
 import com.ragnarok.rxcamera.error.StartPreviewFailedException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by ragnarok on 15/11/13.
  * the internal logic of camera
  */
-public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
+public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera.PreviewCallback {
 
     private static final String TAG = "RxCamera.CameraInternal";
 
@@ -43,7 +44,22 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
     private boolean isSurfaceAvailable = false;
     private boolean isNeedStartPreviewLater = false;
 
-    private Camera.Size previewSize;
+    private List<byte[]> callbackBuffList;
+    private static final int CALLBACK_BUFF_COUNT = 3;
+
+    // open camera error
+    private OpenCameraFailedReason openCameraFailedReason;
+    private Throwable openCameraFailedCause;
+
+    // bind surface error
+    private String bindSurfaceFailedMessage;
+    private Throwable bindSurfaceFailedCause;
+
+    // start preview error
+    private String previewFailedMessage;
+    private Throwable previewFailedCause;
+
+    private OnRxCameraPreviewFrameCallback previewFrameCallback;
 
     public void setConfig(RxCameraConfig config) {
         this.cameraConfig = config;
@@ -53,12 +69,15 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
         return this.cameraConfig;
     }
 
+    public Camera getNativeCamera() {
+        return this.camera;
+    }
+
     public void setContext(Context context) {
         this.context = context;
     }
 
-    private OpenCameraFailedReason openCameraFailedReason;
-    private Throwable openCameraFailedCause;
+
     public boolean openCameraInternal() {
         reset();
         if (cameraConfig == null) {
@@ -104,7 +123,7 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
         // set preview size;
         if (cameraConfig.preferPreviewSize != null) {
             try {
-                previewSize = CameraUtil.findClosetPreviewSize(camera, cameraConfig.preferPreviewSize);
+                Camera.Size previewSize = CameraUtil.findClosetPreviewSize(camera, cameraConfig.preferPreviewSize);
                 parameters.setPreviewSize(previewSize.width, previewSize.height);
             } catch (Exception e) {
                 openCameraFailedReason = OpenCameraFailedReason.SET_PREVIEW_SIZE_FAILED;
@@ -181,15 +200,30 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
         return isOpenCamera;
     }
 
-    private boolean installPreviewCallback() {
+    public boolean installPreviewCallback(OnRxCameraPreviewFrameCallback onRxCameraPreviewFrameCallback) {
         if (isOpenCamera) {
-            int buffSize = cameraConfig.previewBufferSize;
-            if (cameraConfig.previewBufferSize == -1) {
-                buffSize = getPreviewBufferSizeFromParameter();
+            if (callbackBuffList == null) {
+                initCallbackBuffList();
             }
+            for (int i = 0; i < callbackBuffList.size(); i++) {
+                camera.addCallbackBuffer(callbackBuffList.get(i));
+            }
+            this.previewFrameCallback = onRxCameraPreviewFrameCallback;
+            camera.setPreviewCallbackWithBuffer(this);
         }
 
         return false;
+    }
+
+    private void initCallbackBuffList() {
+        int buffSize = cameraConfig.previewBufferSize;
+        if (cameraConfig.previewBufferSize == -1) {
+            buffSize = getPreviewBufferSizeFromParameter();
+        }
+        callbackBuffList = new ArrayList<>();
+        for (int i = 0; i < CALLBACK_BUFF_COUNT; i++) {
+            callbackBuffList.add(new byte[buffSize]);
+        }
     }
 
     private int getPreviewBufferSizeFromParameter() {
@@ -197,7 +231,14 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
                 "previewSize: " + camera.getParameters().getPreviewSize() + ", bitsPerPixels: " +
                 ImageFormat.getBitsPerPixel(camera.getParameters().getPreviewFormat()));
         if (camera.getParameters().getPreviewFormat() == ImageFormat.YV12) {
-            return 1;
+            int width = camera.getParameters().getPreviewSize().width;
+            int height = camera.getParameters().getPreviewSize().height;
+            int yStride = (int) Math.ceil(width / 16.0) * 16;
+            int uvStride = (int) Math.ceil((yStride / 2) / 16.0) * 16;
+            int ySize = yStride * height;
+            int uvSize = uvStride * height / 2;
+            int size = ySize + uvSize * 2;
+            return size;
         } else {
             return camera.getParameters().getPreviewSize().width *
                     camera.getParameters().getPreviewSize().height *
@@ -205,8 +246,14 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
         }
     }
 
-    private String bindSurfaceFailedMessage;
-    private Throwable bindSurfaceFailedCause;
+    @Override
+    public void onPreviewFrame(byte[] data, Camera camera) {
+        camera.addCallbackBuffer(data);
+        if (previewFrameCallback != null) {
+            previewFrameCallback.onPreviewFrame(data);
+        }
+    }
+
     public boolean bindSurfaceInternal(SurfaceView surfaceView) {
         if (camera == null || isBindSurface || surfaceView == null) {
             return false;
@@ -255,8 +302,6 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
         return true;
     }
 
-    private String previewFailedMessage;
-    private Throwable previewFailedCause;
     public boolean startPreviewInternal() {
         if (camera == null || !isBindSurface) {
             return false;
@@ -296,10 +341,6 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener {
             return false;
         }
         return true;
-    }
-
-    public void installPreviewCallback(Camera.PreviewCallback previewCallback) {
-
     }
 
     @Override

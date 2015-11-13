@@ -43,7 +43,7 @@ public class CameraUtil {
     }
 
     public static Camera.CameraInfo getCameraInfo(int id) {
-        if (id > 0 && id < getCameraNumber()) {
+        if (id >= 0 && id < getCameraNumber()) {
             Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
             Camera.getCameraInfo(id, cameraInfo);
             return cameraInfo;

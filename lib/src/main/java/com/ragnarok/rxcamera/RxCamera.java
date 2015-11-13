@@ -1,6 +1,7 @@
 package com.ragnarok.rxcamera;
 
 import android.content.Context;
+import android.hardware.Camera;
 import android.view.SurfaceView;
 import android.view.TextureView;
 
@@ -142,5 +143,13 @@ public class RxCamera  {
 
     public RxCameraConfig getConfig() {
         return cameraInternal.getConfig();
+    }
+
+    public Camera getNativeCamera() {
+        return cameraInternal.getNativeCamera();
+    }
+
+    /* package */ void installPreviewCallback(OnRxCameraPreviewFrameCallback previewCallback) {
+        this.cameraInternal.installPreviewCallback(previewCallback);
     }
 }

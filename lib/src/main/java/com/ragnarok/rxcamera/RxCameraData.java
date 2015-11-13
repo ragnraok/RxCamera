@@ -5,5 +5,5 @@ package com.ragnarok.rxcamera;
  */
 public class RxCameraData {
 
-    byte[] cameraData;
+    public byte[] cameraData;
 }

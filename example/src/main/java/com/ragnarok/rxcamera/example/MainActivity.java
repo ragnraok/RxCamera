@@ -3,6 +3,8 @@ package com.ragnarok.rxcamera.example;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,11 +15,13 @@ import android.view.View;
 import android.widget.Button;
 
 import com.ragnarok.rxcamera.RxCamera;
+import com.ragnarok.rxcamera.RxCameraData;
 import com.ragnarok.rxcamera.config.RxCameraConfig;
 import com.ragnarok.rxcamera.config.RxCameraConfigChooser;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -118,8 +122,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNext(RxCamera rxCamera) {
                 Log.d(TAG, "success: " + rxCamera);
+                camera.request().successiveData().subscribe(new Subscriber<RxCameraData>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(RxCameraData rxCameraData) {
+//                        Log.d(TAG, "onNext, cameraData.length:  " + rxCameraData.cameraData.length);
+                    }
+                });
             }
         });
+
+
     }
 
 

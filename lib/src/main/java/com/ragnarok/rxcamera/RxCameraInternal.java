@@ -378,5 +378,6 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
         previewFailedMessage = null;
         bindSurfaceFailedCause = null;
         bindSurfaceFailedMessage = null;
+        previewFrameCallbackList.clear();
     }
 }

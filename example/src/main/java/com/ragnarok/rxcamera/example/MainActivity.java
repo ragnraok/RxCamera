@@ -22,6 +22,7 @@ import com.ragnarok.rxcamera.config.RxCameraConfigChooser;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -81,22 +82,25 @@ public class MainActivity extends AppCompatActivity {
         RxCamera.open(this, config).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
             @Override
             public Observable<RxCamera> call(RxCamera rxCamera) {
-                Log.d(TAG, "isopen: " + rxCamera.isOpenCamera());
+                Log.d(TAG, "isopen: " + rxCamera.isOpenCamera() + ", thread: " + Thread.currentThread());
                 camera = rxCamera;
                 return rxCamera.bindTexture(textureView);
             }
-        }).subscribeOn(Schedulers.io()).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
+        }).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
             @Override
             public Observable<RxCamera> call(RxCamera rxCamera) {
-                Log.d(TAG, "isbindsurface: " + rxCamera.isBindSurface());
+                Log.d(TAG, "isbindsurface: " + rxCamera.isBindSurface() + ", thread: " + Thread.currentThread());
                 return rxCamera.startPreview();
             }
         }).flatMap(new Func1<RxCamera, Observable<RxCameraData>>() {
             @Override
             public Observable<RxCameraData> call(RxCamera rxCamera) {
+                Log.d(TAG, "after start preview, thread: " + Thread.currentThread());
                 return rxCamera.request().periodicDataRequest(1000);
             }
-        }).subscribe(new Subscriber<RxCameraData>() {
+        }).subscribeOn(Schedulers.io()).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribe(new Subscriber<RxCameraData>() {
             @Override
             public void onCompleted() {
                 Log.d(TAG, "onCompleted");
@@ -109,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(RxCameraData rxCameraData) {
-                Log.d(TAG, "onNext, data.length: " + rxCameraData.cameraData.length);
+                Log.d(TAG, "onNext, data.length: " + rxCameraData.cameraData.length + ", thread: " + Thread.currentThread());
             }
         });
 

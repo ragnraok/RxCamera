@@ -78,23 +78,6 @@ public class MainActivity extends AppCompatActivity {
                 setHandleSurfaceEvent(true).
                 get();
         Log.d(TAG, "config: " + config);
-//        RxCamera.openAndStartPreview(this, config, textureView).subscribe(new Subscriber<RxCamera>() {
-//            @Override
-//            public void onCompleted() {
-//
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                Log.d(TAG, "open camera failed: " + e.getMessage());
-//            }
-//
-//            @Override
-//            public void onNext(RxCamera rxCamera) {
-//                camera = rxCamera;
-//                Log.d(TAG, "open camera success: " + rxCamera.toString());
-//            }
-//        });
         RxCamera.open(this, config).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
             @Override
             public Observable<RxCamera> call(RxCamera rxCamera) {
@@ -108,42 +91,25 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "isbindsurface: " + rxCamera.isBindSurface());
                 return rxCamera.startPreview();
             }
-        }).subscribe(new Subscriber<RxCamera>() {
+        }).flatMap(new Func1<RxCamera, Observable<RxCameraData>>() {
+            @Override
+            public Observable<RxCameraData> call(RxCamera rxCamera) {
+                return rxCamera.request().successiveData();
+            }
+        }).subscribe(new Subscriber<RxCameraData>() {
             @Override
             public void onCompleted() {
-                Log.d(TAG, "onCompleted");
+
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.e(TAG, "error: " + e.getMessage());
+
             }
 
             @Override
-            public void onNext(RxCamera rxCamera) {
-                Log.d(TAG, "success: " + rxCamera);
-                final Subscription subscription = camera.request().successiveData().subscribe(new Subscriber<RxCameraData>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(RxCameraData rxCameraData) {
-                        Log.d(TAG, "onNext, cameraData.length:  " + rxCameraData.cameraData.length);
-                    }
-                });
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        subscription.unsubscribe();
-                    }
-                }, 5000);
+            public void onNext(RxCameraData rxCameraData) {
+                Log.d(TAG, "onNext, data.length: " + rxCameraData.cameraData.length);
             }
         });
 

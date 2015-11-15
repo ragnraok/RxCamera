@@ -369,6 +369,7 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
 
     private void reset() {
         isBindSurface = false;
+        isOpenCamera = false;
         isNeedStartPreviewLater = false;
         isSurfaceAvailable = false;
         openCameraFailedCause = null;

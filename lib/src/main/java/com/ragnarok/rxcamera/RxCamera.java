@@ -125,8 +125,8 @@ public class RxCamera  {
         });
     }
 
-    public RxCameraRequestBuilder request() {
-        return new RxCameraRequestBuilder(this);
+    public RxCameraRequest request() {
+        return new RxCameraRequest(this);
     }
 
     public boolean closeCamera() {
@@ -151,5 +151,9 @@ public class RxCamera  {
 
     /* package */ void installPreviewCallback(OnRxCameraPreviewFrameCallback previewCallback) {
         this.cameraInternal.installPreviewCallback(previewCallback);
+    }
+
+    /* package */ void uninstallPreviewCallback(OnRxCameraPreviewFrameCallback previewCallback) {
+        this.cameraInternal.uninstallPreviewCallback(previewCallback);
     }
 }

@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNext(RxCamera rxCamera) {
                 Log.d(TAG, "success: " + rxCamera);
-                camera.request().successiveData().subscribe(new Subscriber<RxCameraData>() {
+                final Subscription subscription = camera.request().successiveData().subscribe(new Subscriber<RxCameraData>() {
                     @Override
                     public void onCompleted() {
 
@@ -135,9 +135,15 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(RxCameraData rxCameraData) {
-//                        Log.d(TAG, "onNext, cameraData.length:  " + rxCameraData.cameraData.length);
+                        Log.d(TAG, "onNext, cameraData.length:  " + rxCameraData.cameraData.length);
                     }
                 });
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        subscription.unsubscribe();
+                    }
+                }, 5000);
             }
         });
 

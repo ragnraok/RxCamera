@@ -59,7 +59,8 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
     private String previewFailedMessage;
     private Throwable previewFailedCause;
 
-    private OnRxCameraPreviewFrameCallback previewFrameCallback;
+    private boolean isSetPreviewCallback = false;
+    private List<OnRxCameraPreviewFrameCallback> previewFrameCallbackList = new ArrayList<>();
 
     public void setConfig(RxCameraConfig config) {
         this.cameraConfig = config;
@@ -208,11 +209,18 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
             for (int i = 0; i < callbackBuffList.size(); i++) {
                 camera.addCallbackBuffer(callbackBuffList.get(i));
             }
-            this.previewFrameCallback = onRxCameraPreviewFrameCallback;
-            camera.setPreviewCallbackWithBuffer(this);
+            this.previewFrameCallbackList.add(onRxCameraPreviewFrameCallback);
+            if (!isSetPreviewCallback) {
+                camera.setPreviewCallbackWithBuffer(this);
+                isSetPreviewCallback = true;
+            }
         }
 
         return false;
+    }
+
+    public boolean uninstallPreviewCallback(OnRxCameraPreviewFrameCallback onRxCameraPreviewFrameCallback) {
+        return previewFrameCallbackList.remove(onRxCameraPreviewFrameCallback);
     }
 
     private void initCallbackBuffList() {
@@ -249,8 +257,8 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         camera.addCallbackBuffer(data);
-        if (previewFrameCallback != null) {
-            previewFrameCallback.onPreviewFrame(data);
+        for (OnRxCameraPreviewFrameCallback callback : previewFrameCallbackList) {
+            callback.onPreviewFrame(data);
         }
     }
 

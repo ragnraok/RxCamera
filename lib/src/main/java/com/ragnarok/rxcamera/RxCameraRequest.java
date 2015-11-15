@@ -1,19 +1,22 @@
 package com.ragnarok.rxcamera;
 
+import android.util.Log;
+
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 
 
 /**
  * Created by ragnarok on 15/11/13.
  */
-public class RxCameraRequestBuilder implements OnRxCameraPreviewFrameCallback {
+public class RxCameraRequest implements OnRxCameraPreviewFrameCallback {
 
     private static final String TAG = "RxCamera.RxCameraRequestBuilder";
 
     private RxCamera rxCamera;
 
-    public RxCameraRequestBuilder(RxCamera rxCamera) {
+    public RxCameraRequest(RxCamera rxCamera) {
         this.rxCamera = rxCamera;
     }
 
@@ -30,6 +33,18 @@ public class RxCameraRequestBuilder implements OnRxCameraPreviewFrameCallback {
             @Override
             public void call(final Subscriber<? super RxCameraData> subscriber) {
                 successiveDataSubscriber = subscriber;
+                successiveDataSubscriber.add(new Subscription() {
+                    @Override
+                    public void unsubscribe() {
+                        Log.d(TAG, "unsubscribe successiveDataSubscriber");
+                        rxCamera.uninstallPreviewCallback(RxCameraRequest.this);
+                    }
+
+                    @Override
+                    public boolean isUnsubscribed() {
+                        return false;
+                    }
+                });
             }
         });
     }

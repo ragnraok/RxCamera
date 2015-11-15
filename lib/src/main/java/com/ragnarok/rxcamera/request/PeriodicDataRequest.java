@@ -33,10 +33,6 @@ public class PeriodicDataRequest extends BaseRxCameraRequest implements OnRxCame
 
     @Override
     public Observable<RxCameraData> get() {
-        if (!isInstallCallback) {
-            rxCamera.installPreviewCallback(this);
-            isInstallCallback = true;
-        }
         return Observable.create(new Observable.OnSubscribe<RxCameraData>() {
             @Override
             public void call(final Subscriber<? super RxCameraData> subscriber) {
@@ -56,6 +52,14 @@ public class PeriodicDataRequest extends BaseRxCameraRequest implements OnRxCame
             public void call() {
                 rxCamera.uninstallPreviewCallback(PeriodicDataRequest.this);
                 isInstallCallback = false;
+            }
+        }).doOnSubscribe(new Action0() {
+            @Override
+            public void call() {
+                if (!isInstallCallback) {
+                    rxCamera.installPreviewCallback(PeriodicDataRequest.this);
+                    isInstallCallback = true;
+                }
             }
         });
     }

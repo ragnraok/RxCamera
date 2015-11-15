@@ -28,10 +28,7 @@ public class SuccessiveDataRequest extends BaseRxCameraRequest implements OnRxCa
     }
 
     public Observable<RxCameraData> get() {
-        if (!isInstallSuccessivePreviewCallback) {
-            rxCamera.installPreviewCallback(this);
-            isInstallSuccessivePreviewCallback = true;
-        }
+
         return Observable.create(new Observable.OnSubscribe<RxCameraData>() {
             @Override
             public void call(final Subscriber<? super RxCameraData> subscriber) {
@@ -42,6 +39,14 @@ public class SuccessiveDataRequest extends BaseRxCameraRequest implements OnRxCa
             public void call() {
                 rxCamera.uninstallPreviewCallback(SuccessiveDataRequest.this);
                 isInstallSuccessivePreviewCallback = false;
+            }
+        }).doOnSubscribe(new Action0() {
+            @Override
+            public void call() {
+                if (!isInstallSuccessivePreviewCallback) {
+                    rxCamera.installPreviewCallback(SuccessiveDataRequest.this);
+                    isInstallSuccessivePreviewCallback = true;
+                }
             }
         });
     }

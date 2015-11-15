@@ -40,6 +40,7 @@ public class SuccessiveDataRequest extends BaseRxCameraRequest implements OnRxCa
                     public void unsubscribe() {
                         Log.d(TAG, "unsubscribe successiveDataSubscriber");
                         rxCamera.uninstallPreviewCallback(SuccessiveDataRequest.this);
+                        isInstallSuccessivePreviewCallback = false;
                     }
 
                     @Override
@@ -53,7 +54,7 @@ public class SuccessiveDataRequest extends BaseRxCameraRequest implements OnRxCa
 
     @Override
     public void onPreviewFrame(byte[] data) {
-        if (successiveDataSubscriber != null && !successiveDataSubscriber.isUnsubscribed()) {
+        if (successiveDataSubscriber != null && !successiveDataSubscriber.isUnsubscribed() && rxCamera.isOpenCamera()) {
             RxCameraData cameraData = new RxCameraData();
             cameraData.cameraData = data;
             successiveDataSubscriber.onNext(cameraData);

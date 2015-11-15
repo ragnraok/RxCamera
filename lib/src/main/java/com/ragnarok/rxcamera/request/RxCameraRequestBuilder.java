@@ -19,4 +19,8 @@ public class RxCameraRequestBuilder {
     public Observable<RxCameraData> successiveDataRequest() {
         return new SuccessiveDataRequest(rxCamera).get();
     }
+
+    public Observable<RxCameraData> periodicDataRequest(long intervalMills) {
+        return new PeriodicDataRequest(rxCamera, intervalMills).get();
+    }
 }

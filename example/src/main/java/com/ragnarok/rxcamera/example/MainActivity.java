@@ -94,17 +94,17 @@ public class MainActivity extends AppCompatActivity {
         }).flatMap(new Func1<RxCamera, Observable<RxCameraData>>() {
             @Override
             public Observable<RxCameraData> call(RxCamera rxCamera) {
-                return rxCamera.request().successiveDataRequest();
+                return rxCamera.request().periodicDataRequest(1000);
             }
         }).subscribe(new Subscriber<RxCameraData>() {
             @Override
             public void onCompleted() {
-
+                Log.d(TAG, "onCompleted");
             }
 
             @Override
             public void onError(Throwable e) {
-
+                Log.e(TAG, "onError: " + e.getMessage());
             }
 
             @Override

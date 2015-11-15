@@ -1,6 +1,10 @@
-package com.ragnarok.rxcamera;
+package com.ragnarok.rxcamera.request;
 
 import android.util.Log;
+
+import com.ragnarok.rxcamera.OnRxCameraPreviewFrameCallback;
+import com.ragnarok.rxcamera.RxCamera;
+import com.ragnarok.rxcamera.RxCameraData;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -10,21 +14,19 @@ import rx.Subscription;
 /**
  * Created by ragnarok on 15/11/13.
  */
-public class RxCameraRequest implements OnRxCameraPreviewFrameCallback {
+public class SuccessiveDataRequest extends BaseRxCameraRequest implements OnRxCameraPreviewFrameCallback {
 
     private static final String TAG = "RxCamera.RxCameraRequestBuilder";
-
-    private RxCamera rxCamera;
-
-    public RxCameraRequest(RxCamera rxCamera) {
-        this.rxCamera = rxCamera;
-    }
 
     private boolean isInstallSuccessivePreviewCallback = false;
 
     private Subscriber<? super RxCameraData> successiveDataSubscriber = null;
 
-    public Observable<RxCameraData> successiveData() {
+    public SuccessiveDataRequest(RxCamera rxCamera) {
+        super(rxCamera);
+    }
+
+    public Observable<RxCameraData> get() {
         if (!isInstallSuccessivePreviewCallback) {
             rxCamera.installPreviewCallback(this);
             isInstallSuccessivePreviewCallback = true;
@@ -37,7 +39,7 @@ public class RxCameraRequest implements OnRxCameraPreviewFrameCallback {
                     @Override
                     public void unsubscribe() {
                         Log.d(TAG, "unsubscribe successiveDataSubscriber");
-                        rxCamera.uninstallPreviewCallback(RxCameraRequest.this);
+                        rxCamera.uninstallPreviewCallback(SuccessiveDataRequest.this);
                     }
 
                     @Override

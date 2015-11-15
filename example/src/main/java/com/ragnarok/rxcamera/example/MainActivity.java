@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         }).flatMap(new Func1<RxCamera, Observable<RxCameraData>>() {
             @Override
             public Observable<RxCameraData> call(RxCamera rxCamera) {
-                return rxCamera.request().successiveData();
+                return rxCamera.request().successiveDataRequest();
             }
         }).subscribe(new Subscriber<RxCameraData>() {
             @Override

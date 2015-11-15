@@ -6,6 +6,7 @@ import android.view.SurfaceView;
 import android.view.TextureView;
 
 import com.ragnarok.rxcamera.config.RxCameraConfig;
+import com.ragnarok.rxcamera.request.RxCameraRequestBuilder;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -125,8 +126,8 @@ public class RxCamera  {
         });
     }
 
-    public RxCameraRequest request() {
-        return new RxCameraRequest(this);
+    public RxCameraRequestBuilder request() {
+        return new RxCameraRequestBuilder(this);
     }
 
     public boolean closeCamera() {
@@ -149,11 +150,11 @@ public class RxCamera  {
         return cameraInternal.getNativeCamera();
     }
 
-    /* package */ void installPreviewCallback(OnRxCameraPreviewFrameCallback previewCallback) {
+    public void installPreviewCallback(OnRxCameraPreviewFrameCallback previewCallback) {
         this.cameraInternal.installPreviewCallback(previewCallback);
     }
 
-    /* package */ void uninstallPreviewCallback(OnRxCameraPreviewFrameCallback previewCallback) {
+    public void uninstallPreviewCallback(OnRxCameraPreviewFrameCallback previewCallback) {
         this.cameraInternal.uninstallPreviewCallback(previewCallback);
     }
 }

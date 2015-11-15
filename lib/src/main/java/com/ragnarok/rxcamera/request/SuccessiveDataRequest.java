@@ -9,6 +9,7 @@ import com.ragnarok.rxcamera.RxCameraData;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action0;
 
 
 /**
@@ -35,19 +36,12 @@ public class SuccessiveDataRequest extends BaseRxCameraRequest implements OnRxCa
             @Override
             public void call(final Subscriber<? super RxCameraData> subscriber) {
                 successiveDataSubscriber = subscriber;
-                successiveDataSubscriber.add(new Subscription() {
-                    @Override
-                    public void unsubscribe() {
-                        Log.d(TAG, "unsubscribe successiveDataSubscriber");
-                        rxCamera.uninstallPreviewCallback(SuccessiveDataRequest.this);
-                        isInstallSuccessivePreviewCallback = false;
-                    }
-
-                    @Override
-                    public boolean isUnsubscribed() {
-                        return false;
-                    }
-                });
+            }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                rxCamera.uninstallPreviewCallback(SuccessiveDataRequest.this);
+                isInstallSuccessivePreviewCallback = false;
             }
         });
     }

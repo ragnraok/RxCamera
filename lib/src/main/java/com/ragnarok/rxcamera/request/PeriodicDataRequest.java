@@ -41,18 +41,6 @@ public class PeriodicDataRequest extends BaseRxCameraRequest implements OnRxCame
             @Override
             public void call(final Subscriber<? super RxCameraData> subscriber) {
                 PeriodicDataRequest.this.subscriber = subscriber;
-                subscriber.add(new Subscription() {
-                    @Override
-                    public void unsubscribe() {
-                        rxCamera.uninstallPreviewCallback(PeriodicDataRequest.this);
-                        isInstallCallback = false;
-                    }
-
-                    @Override
-                    public boolean isUnsubscribed() {
-                        return false;
-                    }
-                });
                 subscriber.add(Schedulers.newThread().createWorker().schedulePeriodically(new Action0() {
                     @Override
                     public void call() {
@@ -62,6 +50,12 @@ public class PeriodicDataRequest extends BaseRxCameraRequest implements OnRxCame
                     }
                 }, 0, intervalMills, TimeUnit.MILLISECONDS));
 
+            }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                rxCamera.uninstallPreviewCallback(PeriodicDataRequest.this);
+                isInstallCallback = false;
             }
         });
     }

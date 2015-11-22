@@ -1,6 +1,7 @@
 package com.ragnarok.rxcamera;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.view.SurfaceView;
 import android.view.TextureView;
@@ -14,6 +15,7 @@ import rx.functions.Func1;
 
 /**
  * Created by ragnarok on 15/10/25.
+ * The RxCamera library interface
  */
 public class RxCamera  {
 
@@ -187,12 +189,28 @@ public class RxCamera  {
         return cameraInternal.isBindSurface();
     }
 
+    /**
+     * the config of this camera
+     * @return
+     */
     public RxCameraConfig getConfig() {
         return cameraInternal.getConfig();
     }
 
+    /**
+     * the native {@link android.hardware.Camera} object
+     * @return
+     */
     public Camera getNativeCamera() {
         return cameraInternal.getNativeCamera();
+    }
+
+    /**
+     * the final preview size, mostly this is not the same as the one set in {@link RxCameraConfig}
+     * @return
+     */
+    public Point getFinalPreviewSize() {
+        return cameraInternal.getFinalPreviewSize();
     }
 
     public void installPreviewCallback(OnRxCameraPreviewFrameCallback previewCallback) {

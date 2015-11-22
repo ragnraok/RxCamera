@@ -2,6 +2,7 @@ package com.ragnarok.rxcamera;
 
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -59,6 +60,8 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
     private String previewFailedMessage;
     private Throwable previewFailedCause;
 
+    private Point finalPreviewSize;
+
     private boolean isSetPreviewCallback = false;
     private List<OnRxCameraPreviewFrameCallback> previewFrameCallbackList = new ArrayList<>();
     private List<OnRxCameraPreviewFrameCallback> oneshotPrevieFrameCallbackList = new ArrayList<>();
@@ -73,6 +76,10 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
 
     public Camera getNativeCamera() {
         return this.camera;
+    }
+
+    public Point getFinalPreviewSize() {
+        return finalPreviewSize;
     }
 
     public void setContext(Context context) {
@@ -127,6 +134,7 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
             try {
                 Camera.Size previewSize = CameraUtil.findClosetPreviewSize(camera, cameraConfig.preferPreviewSize);
                 parameters.setPreviewSize(previewSize.width, previewSize.height);
+                finalPreviewSize = new Point(previewSize.width, previewSize.height);
             } catch (Exception e) {
                 openCameraFailedReason = OpenCameraFailedReason.SET_PREVIEW_SIZE_FAILED;
                 openCameraFailedCause = e;
@@ -398,6 +406,8 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
         previewFailedMessage = null;
         bindSurfaceFailedCause = null;
         bindSurfaceFailedMessage = null;
+        finalPreviewSize = null;
         previewFrameCallbackList.clear();
+        oneshotPrevieFrameCallbackList.clear();
     }
 }

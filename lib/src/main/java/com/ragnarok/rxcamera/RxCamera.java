@@ -157,4 +157,12 @@ public class RxCamera  {
     public void uninstallPreviewCallback(OnRxCameraPreviewFrameCallback previewCallback) {
         this.cameraInternal.uninstallPreviewCallback(previewCallback);
     }
+
+    public void installOneShotPreviewCallback(OnRxCameraPreviewFrameCallback previewFrameCallback) {
+        this.cameraInternal.installOneShotPreviewCallback(previewFrameCallback);
+    }
+
+    public void uninstallOneShotPreviewCallback(OnRxCameraPreviewFrameCallback previewFrameCallback) {
+        this.cameraInternal.uninstallOneShotPreviewCallback(previewFrameCallback);
+    }
 }

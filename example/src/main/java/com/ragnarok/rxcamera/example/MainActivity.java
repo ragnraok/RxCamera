@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Observable<RxCameraData> call(RxCamera rxCamera) {
                 Log.d(TAG, "after start preview, thread: " + Thread.currentThread());
-                return rxCamera.request().periodicDataRequest(1000);
+                return rxCamera.request().oneShotRequest();
             }
         }).subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread()).

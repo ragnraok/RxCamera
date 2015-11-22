@@ -61,6 +61,7 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
 
     private boolean isSetPreviewCallback = false;
     private List<OnRxCameraPreviewFrameCallback> previewFrameCallbackList = new ArrayList<>();
+    private List<OnRxCameraPreviewFrameCallback> oneshotPrevieFrameCallbackList = new ArrayList<>();
 
     public void setConfig(RxCameraConfig config) {
         this.cameraConfig = config;
@@ -214,13 +215,28 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
                 camera.setPreviewCallbackWithBuffer(this);
                 isSetPreviewCallback = true;
             }
+            return true;
         }
 
         return false;
     }
 
+    public boolean installOneShotPreviewCallback(OnRxCameraPreviewFrameCallback onRxCameraPreviewFrameCallback) {
+        if (isOpenCamera) {
+            this.oneshotPrevieFrameCallbackList.add(onRxCameraPreviewFrameCallback);
+            camera.setOneShotPreviewCallback(this);
+            isSetPreviewCallback = false; // the oneshot callback will only be called once
+            return true;
+        }
+        return false;
+    }
+
     public boolean uninstallPreviewCallback(OnRxCameraPreviewFrameCallback onRxCameraPreviewFrameCallback) {
         return previewFrameCallbackList.remove(onRxCameraPreviewFrameCallback);
+    }
+
+    public boolean uninstallOneShotPreviewCallback(OnRxCameraPreviewFrameCallback onRxCameraPreviewFrameCallback) {
+        return oneshotPrevieFrameCallbackList.remove(onRxCameraPreviewFrameCallback);
     }
 
     private void initCallbackBuffList() {
@@ -260,6 +276,10 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
         for (OnRxCameraPreviewFrameCallback callback : previewFrameCallbackList) {
             callback.onPreviewFrame(data);
         }
+        for (OnRxCameraPreviewFrameCallback callback : oneshotPrevieFrameCallbackList) {
+            callback.onPreviewFrame(data);
+        }
+        oneshotPrevieFrameCallbackList.clear();
     }
 
     public boolean bindSurfaceInternal(SurfaceView surfaceView) {

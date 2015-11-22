@@ -4,7 +4,7 @@ import android.graphics.Point;
 
 /**
  * Created by ragnarok on 15/11/1.
- * store the config of camera
+ * store the config of camera, you must set the config from {@link RxCameraConfigChooser}
  */
 public class RxCameraConfig {
 

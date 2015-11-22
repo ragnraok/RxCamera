@@ -21,6 +21,12 @@ public class RxCamera  {
 
     private RxCameraInternal cameraInternal = new RxCameraInternal();
 
+    /**
+     * open the camera
+     * @param context
+     * @param config
+     * @return
+     */
     public static Observable<RxCamera> open(final Context context, final RxCameraConfig config) {
         return Observable.create(new Observable.OnSubscribe<RxCamera>() {
             @Override
@@ -36,6 +42,13 @@ public class RxCamera  {
         });
     }
 
+    /**
+     * open camera and start preview, bind a {@link SurfaceView}
+     * @param context
+     * @param config
+     * @param surfaceView
+     * @return
+     */
     public static Observable<RxCamera> openAndStartPreview(Context context, RxCameraConfig config, final SurfaceView surfaceView) {
         return open(context, config).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
             @Override
@@ -50,6 +63,13 @@ public class RxCamera  {
         });
     }
 
+    /**
+     * open camera and start preview, bind a {@link TextureView}
+     * @param context
+     * @param config
+     * @param textureView
+     * @return
+     */
     public static Observable<RxCamera> openAndStartPreview(Context context, RxCameraConfig config, final TextureView textureView) {
         return open(context, config).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
             @Override
@@ -70,6 +90,11 @@ public class RxCamera  {
         this.cameraInternal.setContext(context);
     }
 
+    /**
+     * bind a {@link SurfaceView} as the camera preview surface
+     * @param surfaceView
+     * @return
+     */
     public Observable<RxCamera> bindSurface(final SurfaceView surfaceView) {
         return Observable.create(new Observable.OnSubscribe<RxCamera>() {
             @Override
@@ -85,6 +110,11 @@ public class RxCamera  {
         });
     }
 
+    /**
+     * bind a {@link TextureView} as the camera preview surface
+     * @param textureView
+     * @return
+     */
     public Observable<RxCamera> bindTexture(final TextureView textureView) {
         return Observable.create(new Observable.OnSubscribe<RxCamera>() {
             @Override
@@ -100,7 +130,10 @@ public class RxCamera  {
         });
     }
 
-
+    /**
+     * start preview, must be called after bindTexture or bindSurface
+     * @return
+     */
     public Observable<RxCamera> startPreview() {
         return Observable.create(new Observable.OnSubscribe<RxCamera>() {
             @Override
@@ -116,6 +149,10 @@ public class RxCamera  {
         });
     }
 
+    /**
+     * close the camera, return an Observable as the result
+     * @return
+     */
     public Observable<Boolean> closeCameraWithResult() {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
@@ -126,10 +163,18 @@ public class RxCamera  {
         });
     }
 
+    /**
+     * return a {@link RxCameraRequestBuilder} which you can request the camera preview frame data
+     * @return
+     */
     public RxCameraRequestBuilder request() {
         return new RxCameraRequestBuilder(this);
     }
 
+    /**
+     * directly close the camera
+     * @return true if close success
+     */
     public boolean closeCamera() {
         return cameraInternal.closeCameraInternal();
     }

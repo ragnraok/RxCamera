@@ -3,6 +3,7 @@ package com.ragnarok.rxcamera.request;
 import com.ragnarok.rxcamera.OnRxCameraPreviewFrameCallback;
 import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
+import com.ragnarok.rxcamera.error.CameraDataNullException;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -37,6 +38,9 @@ public class TakeOneShotRequest extends BaseRxCameraRequest implements OnRxCamer
     @Override
     public void onPreviewFrame(byte[] data) {
         if (subscriber != null && !subscriber.isUnsubscribed() && rxCamera.isOpenCamera()) {
+            if (data == null || data.length == 0) {
+                subscriber.onError(new CameraDataNullException());
+            }
             RxCameraData rxCameraData = new RxCameraData();
             rxCameraData.cameraData = data;
             subscriber.onNext(rxCameraData);

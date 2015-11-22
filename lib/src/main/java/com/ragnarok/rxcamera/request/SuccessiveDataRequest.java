@@ -5,6 +5,7 @@ import android.util.Log;
 import com.ragnarok.rxcamera.OnRxCameraPreviewFrameCallback;
 import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
+import com.ragnarok.rxcamera.error.CameraDataNullException;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -54,6 +55,9 @@ public class SuccessiveDataRequest extends BaseRxCameraRequest implements OnRxCa
     @Override
     public void onPreviewFrame(byte[] data) {
         if (successiveDataSubscriber != null && !successiveDataSubscriber.isUnsubscribed() && rxCamera.isOpenCamera()) {
+            if (data == null || data.length == 0) {
+                successiveDataSubscriber.onError(new CameraDataNullException());
+            }
             RxCameraData cameraData = new RxCameraData();
             cameraData.cameraData = data;
             successiveDataSubscriber.onNext(cameraData);

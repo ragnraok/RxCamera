@@ -33,5 +33,4 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'io.reactivex:rxandroid:1.0.1'
-    compile 'io.reactivex:rxandroid:1.0.1'
 }

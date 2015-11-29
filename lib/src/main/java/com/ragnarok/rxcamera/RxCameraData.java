@@ -15,7 +15,7 @@ public class RxCameraData {
     public byte[] cameraData;
 
     /**
-     * a matrix help you rotate the camera data
+     * a matrix help you rotate the camera data in portrait mode
      */
     public Matrix rotateMatrix;
 }

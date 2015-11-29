@@ -1,8 +1,12 @@
 package com.ragnarok.rxcamera.example;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
@@ -18,12 +22,19 @@ import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
 import com.ragnarok.rxcamera.config.RxCameraConfig;
 import com.ragnarok.rxcamera.config.RxCameraConfigChooser;
+import com.ragnarok.rxcamera.request.Func;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -95,25 +106,30 @@ public class MainActivity extends AppCompatActivity {
         }).flatMap(new Func1<RxCamera, Observable<RxCameraData>>() {
             @Override
             public Observable<RxCameraData> call(RxCamera rxCamera) {
-                Log.d(TAG, "after start preview, thread: " + Thread.currentThread());
-                return rxCamera.request().oneShotRequest();
+                return rxCamera.request().takePictureRequest(new Func() {
+                    @Override
+                    public void call() {
+                        Log.d(TAG, "captured!");
+                    }
+                });
             }
-        }).subscribeOn(Schedulers.io()).
-                observeOn(AndroidSchedulers.mainThread()).
-                subscribe(new Subscriber<RxCameraData>() {
+        }).subscribe(new Action1<RxCameraData>() {
             @Override
-            public void onCompleted() {
-                Log.d(TAG, "onCompleted");
-            }
+            public void call(RxCameraData rxCameraData) {
+                String path = Environment.getExternalStorageDirectory() + "/test.jpg";
+                File file = new File(path);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(rxCameraData.cameraData, 0, rxCameraData.cameraData.length);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
+                        rxCameraData.rotateMatrix, false);
+                try {
+                    file.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(file);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.e(TAG, "onError: " + e.getMessage());
-            }
-
-            @Override
-            public void onNext(RxCameraData rxCameraData) {
-                Log.d(TAG, "onNext, data.length: " + rxCameraData.cameraData.length + ", thread: " + Thread.currentThread());
             }
         });
 

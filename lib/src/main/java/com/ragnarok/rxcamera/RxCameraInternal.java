@@ -147,6 +147,7 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
         if (cameraConfig.previewFormat != -1) {
             try {
                 parameters.setPreviewFormat(cameraConfig.previewFormat);
+                parameters.setPictureFormat(ImageFormat.JPEG);
             } catch (Exception e) {
                 openCameraFailedReason = OpenCameraFailedReason.SET_PREVIEW_FORMAT_FAILED;
                 openCameraFailedCause = e;

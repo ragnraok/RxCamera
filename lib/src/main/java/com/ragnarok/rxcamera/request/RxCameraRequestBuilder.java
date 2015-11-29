@@ -4,6 +4,7 @@ import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
 
 import rx.Observable;
+import rx.functions.Func0;
 
 /**
  * Created by ragnarok on 15/11/15.
@@ -40,5 +41,14 @@ public class RxCameraRequestBuilder {
      */
     public Observable<RxCameraData> oneShotRequest() {
         return new TakeOneShotRequest(rxCamera).get();
+    }
+
+    /**
+     * take picture request, after call, will stop camera preview just like {@code Camera.takePicture}
+     * @param shutterAction call when the image is captured
+     * @return
+     */
+    public Observable<RxCameraData> takePictureRequest(Func0 shutterAction) {
+        return new TakePictureRequest(rxCamera, shutterAction).get();
     }
 }

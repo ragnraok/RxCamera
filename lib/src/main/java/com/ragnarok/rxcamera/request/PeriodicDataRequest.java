@@ -72,6 +72,7 @@ public class PeriodicDataRequest extends BaseRxCameraRequest implements OnRxCame
                 subscriber.onError(new CameraDataNullException());
             }
             currentData.cameraData = data;
+            currentData.rotateMatrix = rxCamera.getRotateMatrix();
         }
     }
 }

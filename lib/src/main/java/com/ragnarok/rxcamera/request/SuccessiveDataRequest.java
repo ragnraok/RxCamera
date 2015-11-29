@@ -60,6 +60,7 @@ public class SuccessiveDataRequest extends BaseRxCameraRequest implements OnRxCa
             }
             RxCameraData cameraData = new RxCameraData();
             cameraData.cameraData = data;
+            cameraData.rotateMatrix = rxCamera.getRotateMatrix();
             successiveDataSubscriber.onNext(cameraData);
         }
     }

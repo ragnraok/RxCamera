@@ -43,6 +43,7 @@ public class TakeOneShotRequest extends BaseRxCameraRequest implements OnRxCamer
             }
             RxCameraData rxCameraData = new RxCameraData();
             rxCameraData.cameraData = data;
+            rxCameraData.rotateMatrix = rxCamera.getRotateMatrix();
             subscriber.onNext(rxCameraData);
         }
     }

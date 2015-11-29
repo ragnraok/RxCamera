@@ -1,6 +1,7 @@
 package com.ragnarok.rxcamera;
 
 import android.content.Context;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.view.SurfaceView;
@@ -22,6 +23,8 @@ public class RxCamera  {
     private static final String TAG = "RxCamera";
 
     private RxCameraInternal cameraInternal = new RxCameraInternal();
+
+    private Matrix rotateMatrix = null;
 
     /**
      * open the camera
@@ -90,6 +93,12 @@ public class RxCamera  {
         this.cameraInternal = new RxCameraInternal();
         this.cameraInternal.setConfig(config);
         this.cameraInternal.setContext(context);
+        rotateMatrix = new Matrix();
+        rotateMatrix.postRotate(config.cameraOrien, 0.5f, 0.5f);
+    }
+
+    public Matrix getRotateMatrix() {
+        return rotateMatrix;
     }
 
     /**

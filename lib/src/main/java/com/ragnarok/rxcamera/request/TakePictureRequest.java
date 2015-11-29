@@ -8,16 +8,15 @@ import com.ragnarok.rxcamera.error.TakePictureFailedException;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Func0;
 
 /**
  * Created by ragnarok on 15/11/29.
  */
 public class TakePictureRequest extends BaseRxCameraRequest {
 
-    private Func0 shutterAction;
+    private Func shutterAction;
 
-    public TakePictureRequest(RxCamera rxCamera, Func0 shutterAction) {
+    public TakePictureRequest(RxCamera rxCamera, Func shutterAction) {
         super(rxCamera);
         this.shutterAction = shutterAction;
     }

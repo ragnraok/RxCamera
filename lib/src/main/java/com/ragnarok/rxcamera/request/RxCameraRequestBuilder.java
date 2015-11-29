@@ -4,7 +4,6 @@ import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
 
 import rx.Observable;
-import rx.functions.Func0;
 
 /**
  * Created by ragnarok on 15/11/15.
@@ -48,7 +47,7 @@ public class RxCameraRequestBuilder {
      * @param shutterAction call when the image is captured
      * @return
      */
-    public Observable<RxCameraData> takePictureRequest(Func0 shutterAction) {
+    public Observable<RxCameraData> takePictureRequest(Func shutterAction) {
         return new TakePictureRequest(rxCamera, shutterAction).get();
     }
 }

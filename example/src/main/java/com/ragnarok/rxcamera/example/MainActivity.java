@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.ragnarok.rxcamera.RxCamera;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private Button openCameraBtn;
     private Button closeCameraBtn;
     private TextView logTextView;
-    private View logArea;
+    private ScrollView logArea;
 
     private RxCamera camera;
 
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         openCameraBtn = (Button) findViewById(R.id.open_camera);
         closeCameraBtn = (Button) findViewById(R.id.close_camera);
         logTextView = (TextView) findViewById(R.id.log_textview);
-        logArea = findViewById(R.id.log_area);
+        logArea = (ScrollView) findViewById(R.id.log_area);
 
         openCameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,6 +135,12 @@ public class MainActivity extends AppCompatActivity {
     private void showLog(String s) {
         Log.d(TAG, s);
         logTextView.append(s + "\n");
+        logTextView.post(new Runnable() {
+            @Override
+            public void run() {
+                logArea.fullScroll(View.FOCUS_DOWN);
+            }
+        });
     }
 
 

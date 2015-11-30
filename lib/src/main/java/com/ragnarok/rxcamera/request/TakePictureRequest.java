@@ -8,6 +8,7 @@ import com.ragnarok.rxcamera.error.TakePictureFailedException;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action1;
 
 /**
  * Created by ragnarok on 15/11/29.
@@ -15,10 +16,12 @@ import rx.Subscriber;
 public class TakePictureRequest extends BaseRxCameraRequest {
 
     private Func shutterAction;
+    private boolean isContinuePreview;
 
-    public TakePictureRequest(RxCamera rxCamera, Func shutterAction) {
+    public TakePictureRequest(RxCamera rxCamera, Func shutterAction, boolean isContinuePreview) {
         super(rxCamera);
         this.shutterAction = shutterAction;
+        this.isContinuePreview = true;
     }
 
     @Override
@@ -43,11 +46,20 @@ public class TakePictureRequest extends BaseRxCameraRequest {
 
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
+                        if (isContinuePreview) {
+                            rxCamera.startPreview().doOnError(new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    subscriber.onError(throwable);
+                                }
+                            }).subscribe();
+                        }
                         if (data != null) {
                             RxCameraData rxCameraData = new RxCameraData();
                             rxCameraData.cameraData = data;
                             rxCameraData.rotateMatrix = rxCamera.getRotateMatrix();
                             subscriber.onNext(rxCameraData);
+
                         } else {
                             subscriber.onError(new TakePictureFailedException("cannot get take picture data"));
                         }

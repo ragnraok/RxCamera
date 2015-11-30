@@ -44,10 +44,11 @@ public class RxCameraRequestBuilder {
 
     /**
      * take picture request, after call, will stop camera preview just like {@code Camera.takePicture}
-     * @param shutterAction call when the image is captured
+     * @param isContinuePreview if continue preview after picture is captured
+     * @param shutterAction call when the image is captured, it will be invoked before retrieve the actual image data
      * @return
      */
-    public Observable<RxCameraData> takePictureRequest(Func shutterAction) {
-        return new TakePictureRequest(rxCamera, shutterAction).get();
+    public Observable<RxCameraData> takePictureRequest(boolean isContinuePreview, Func shutterAction) {
+        return new TakePictureRequest(rxCamera, shutterAction, isContinuePreview).get();
     }
 }

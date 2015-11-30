@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
         if (!checkCamera()) {
             return;
         }
-        camera.request().takePictureRequest(new Func() {
+        camera.request().takePictureRequest(true, new Func() {
             @Override
             public void call() {
                 showLog("Captured!");

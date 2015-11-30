@@ -14,9 +14,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
@@ -45,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private TextureView textureView;
     private Button openCameraBtn;
     private Button closeCameraBtn;
+    private TextView logTextView;
+    private View logArea;
 
     private RxCamera camera;
 
@@ -58,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         textureView = (TextureView) findViewById(R.id.preview_surface);
         openCameraBtn = (Button) findViewById(R.id.open_camera);
         closeCameraBtn = (Button) findViewById(R.id.close_camera);
+        logTextView = (TextView) findViewById(R.id.log_textview);
+        logArea = findViewById(R.id.log_area);
 
         openCameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     camera.closeCameraWithResult().subscribe(new Action1<Boolean>() {
                         @Override
                         public void call(Boolean aBoolean) {
-                            Log.d(TAG, "close camera finished, success: " + aBoolean);
+                            showLog("close camera finished, success: " + aBoolean);
                         }
                     });
                 }
@@ -93,25 +100,107 @@ public class MainActivity extends AppCompatActivity {
         RxCamera.open(this, config).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
             @Override
             public Observable<RxCamera> call(RxCamera rxCamera) {
-                Log.d(TAG, "isopen: " + rxCamera.isOpenCamera() + ", thread: " + Thread.currentThread());
+                showLog("isopen: " + rxCamera.isOpenCamera() + ", thread: " + Thread.currentThread());
                 camera = rxCamera;
                 return rxCamera.bindTexture(textureView);
             }
         }).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
             @Override
             public Observable<RxCamera> call(RxCamera rxCamera) {
-                Log.d(TAG, "isbindsurface: " + rxCamera.isBindSurface() + ", thread: " + Thread.currentThread());
+                showLog("isbindsurface: " + rxCamera.isBindSurface() + ", thread: " + Thread.currentThread());
                 return rxCamera.startPreview();
             }
-        }).flatMap(new Func1<RxCamera, Observable<RxCameraData>>() {
+        }).subscribe(new Subscriber<RxCamera>() {
             @Override
-            public Observable<RxCameraData> call(RxCamera rxCamera) {
-                return rxCamera.request().takePictureRequest(new Func() {
-                    @Override
-                    public void call() {
-                        Log.d(TAG, "captured!");
-                    }
-                });
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                showLog("open camera error: " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(RxCamera rxCamera) {
+                camera = rxCamera;
+                showLog("open camera success: " + camera);
+            }
+        });
+
+
+    }
+
+    private void showLog(String s) {
+        Log.d(TAG, s);
+        logTextView.append(s + "\n");
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (camera != null) {
+            camera.closeCamera();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_show_log:
+                toggleLogArea();
+                break;
+            case R.id.action_successive_data:
+                requestSuccessiveData();
+                break;
+            case R.id.action_periodic_data:
+                requestPeriodicData();
+                break;
+            case R.id.action_take_one_shot:
+                requestTakeOneShot();
+                break;
+            case R.id.action_take_picture:
+                requestTakePicture();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void toggleLogArea() {
+        if (logArea.getVisibility() == View.VISIBLE) {
+            logArea.setVisibility(View.GONE);
+        } else {
+            logArea.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void requestSuccessiveData() {
+
+    }
+
+    private void requestTakeOneShot() {
+
+    }
+
+    private void requestPeriodicData() {
+
+    }
+
+    private void requestTakePicture() {
+        if (!checkCamera()) {
+            return;
+        }
+        camera.request().takePictureRequest(new Func() {
+            @Override
+            public void call() {
+                showLog("Captured!");
             }
         }).subscribe(new Action1<RxCameraData>() {
             @Override
@@ -129,19 +218,16 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+                showLog("Save file on " + path);
             }
         });
-
-
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (camera != null) {
-            camera.closeCamera();
+    private boolean checkCamera() {
+        if (camera == null || !camera.isOpenCamera()) {
+            return false;
         }
+        return true;
     }
+
 }

@@ -1,5 +1,7 @@
 package com.ragnarok.rxcamera.request;
 
+import android.util.Log;
+
 import com.ragnarok.rxcamera.OnRxCameraPreviewFrameCallback;
 import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
@@ -10,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -19,6 +22,8 @@ import rx.schedulers.Schedulers;
  */
 public class PeriodicDataRequest extends BaseRxCameraRequest implements OnRxCameraPreviewFrameCallback {
 
+    private static final String TAG = "MicroMsg.PeriodicDataRequest";
+
     private long intervalMills;
 
     private boolean isInstallCallback = false;
@@ -26,6 +31,8 @@ public class PeriodicDataRequest extends BaseRxCameraRequest implements OnRxCame
     private Subscriber<? super RxCameraData> subscriber = null;
 
     private RxCameraData currentData = new RxCameraData();
+
+    private long lastSendDataTimestamp = 0;
 
     public PeriodicDataRequest(RxCamera rxCamera, long intervalMills) {
         super(rxCamera);
@@ -62,7 +69,13 @@ public class PeriodicDataRequest extends BaseRxCameraRequest implements OnRxCame
                     isInstallCallback = true;
                 }
             }
-        });
+        }).doOnTerminate(new Action0() {
+            @Override
+            public void call() {
+                rxCamera.uninstallPreviewCallback(PeriodicDataRequest.this);
+                isInstallCallback = false;
+            }
+        }).observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override

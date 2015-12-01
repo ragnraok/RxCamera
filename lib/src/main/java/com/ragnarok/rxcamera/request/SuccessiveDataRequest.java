@@ -18,8 +18,6 @@ import rx.functions.Action0;
  */
 public class SuccessiveDataRequest extends BaseRxCameraRequest implements OnRxCameraPreviewFrameCallback {
 
-    private static final String TAG = "RxCamera.RxCameraRequestBuilder";
-
     private boolean isInstallSuccessivePreviewCallback = false;
 
     private Subscriber<? super RxCameraData> successiveDataSubscriber = null;
@@ -48,6 +46,12 @@ public class SuccessiveDataRequest extends BaseRxCameraRequest implements OnRxCa
                     rxCamera.installPreviewCallback(SuccessiveDataRequest.this);
                     isInstallSuccessivePreviewCallback = true;
                 }
+            }
+        }).doOnTerminate(new Action0() {
+            @Override
+            public void call() {
+                rxCamera.uninstallPreviewCallback(SuccessiveDataRequest.this);
+                isInstallSuccessivePreviewCallback = false;
             }
         });
     }

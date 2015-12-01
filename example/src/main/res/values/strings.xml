@@ -3,8 +3,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_showlog">Show Log</string>
-    <string name="action_successive_data">SuccessDataRequest</string>
+    <string name="action_successive_data">SuccessiveDataRequest</string>
     <string name="action_periodic_data">PeriodicDataRequest</string>
-    <string name="action_take_one_shot">TakeOneShotRequest</string>
+    <string name="action_one_shot">OneShotRequest</string>
     <string name="action_take_picture">TakePictureRequest</string>
 </resources>

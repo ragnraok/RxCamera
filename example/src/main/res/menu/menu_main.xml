@@ -7,7 +7,7 @@
         app:showAsAction="collapseActionView"/>
     <item android:id="@+id/action_periodic_data" android:title="@string/action_periodic_data"
         app:showAsAction="collapseActionView"/>
-    <item android:id="@+id/action_take_one_shot" android:title="@string/action_take_one_shot"
+    <item android:id="@+id/action_one_shot" android:title="@string/action_one_shot"
         app:showAsAction="collapseActionView"/>
     <item android:id="@+id/action_take_picture" android:title="@string/action_take_picture"
         app:showAsAction="collapseActionView"/>

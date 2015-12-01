@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 showLog("isbindsurface: " + rxCamera.isBindSurface() + ", thread: " + Thread.currentThread());
                 return rxCamera.startPreview();
             }
-        }).subscribe(new Subscriber<RxCamera>() {
+        }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<RxCamera>() {
             @Override
             public void onCompleted() {
 
@@ -170,8 +170,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_periodic_data:
                 requestPeriodicData();
                 break;
-            case R.id.action_take_one_shot:
-                requestTakeOneShot();
+            case R.id.action_one_shot:
+                requestOneShot();
                 break;
             case R.id.action_take_picture:
                 requestTakePicture();
@@ -189,15 +189,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestSuccessiveData() {
-
+        if (!checkCamera()) {
+            return;
+        }
+        camera.request().successiveDataRequest().subscribe(new Action1<RxCameraData>() {
+            @Override
+            public void call(RxCameraData rxCameraData) {
+                showLog("successiveData, cameraData.length: " + rxCameraData.cameraData.length);
+            }
+        });
     }
 
-    private void requestTakeOneShot() {
-
+    private void requestOneShot() {
+        if (!checkCamera()) {
+            return;
+        }
+        camera.request().oneShotRequest().subscribe(new Action1<RxCameraData>() {
+            @Override
+            public void call(RxCameraData rxCameraData) {
+                showLog("one shot request, cameraData.length: " + rxCameraData.cameraData.length);
+            }
+        });
     }
 
     private void requestPeriodicData() {
-
+        if (!checkCamera()) {
+            return;
+        }
+        camera.request().periodicDataRequest(1000).subscribe(new Action1<RxCameraData>() {
+            @Override
+            public void call(RxCameraData rxCameraData) {
+                showLog("periodic request, cameraData.length: " + rxCameraData.cameraData.length);
+            }
+        });
     }
 
     private void requestTakePicture() {

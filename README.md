@@ -80,7 +80,7 @@ Usage:
 		camera.request().takePictureRequest(boolean isContinuePreview, Func shutterAction)
 		```
 		the encapsulation of [takePicture](http://goo.gl/xhlLbJ) API, if ``isContinuePreview`` set to true, the RxCamera will try to restart preview after capture the picture, otherwise will behave as system ``takePicture`` call, stop preview after captured successfully <br/>
-		and the ``shutterAction`` will called after picture just captured, just like the [ShutterCallback](http://developer.android.com/intl/es/reference/android/hardware/Camera.ShutterCallback.html) (actually it is called in the shutterCallback)
+		and the ``shutterAction`` will called after picture just captured, like the [ShutterCallback](http://developer.android.com/intl/es/reference/android/hardware/Camera.ShutterCallback.html) (actually it is called in the system shutterCallback)
 		
 	all the data request will return an ``Observalbe<RxCameraData>``
 	
@@ -89,4 +89,4 @@ Usage:
 	- ``byte[] cameraData``, the raw data of camera, for the takePicture request, it will return the jpeg encode byte, other request just return raw camera preview data, if you don't set preview format, the default is YUV420SP
 	- ``Matrix rotateMatrix``, this matrix help you rotate the camera data in portrait
 
-Still under heavily development
+This project still in very early stage, and welcome the pull request

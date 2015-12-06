@@ -58,21 +58,21 @@ Usage:
 		```Java
 		camera.request().successiveDataRequest()
 		```
-		it will return the camera infinitely
+		it will return the camera data infinitely
 		
 	- periodicDataRequest
 		
 		```Java
 		camera.request().periodicDataRequest(1000)
 		```
-		as the name, it will return camera periodic, pass the interval in millisecond
+		as the name, it will return camera data periodic, pass the interval in millisecond
 		
 	- oneShotRequest
 	
 		```Java
 		camera.request().oneShotRequest()
 		```
-		it will return the camera data just **one time**
+		it will return the camera data **only once**
 		
 	- takePictureRequest
 	

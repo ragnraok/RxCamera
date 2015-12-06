@@ -281,7 +281,6 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        camera.addCallbackBuffer(data);
         for (OnRxCameraPreviewFrameCallback callback : previewFrameCallbackList) {
             callback.onPreviewFrame(data);
         }
@@ -289,6 +288,7 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
             callback.onPreviewFrame(data);
         }
         oneshotPrevieFrameCallbackList.clear();
+        camera.addCallbackBuffer(data);
     }
 
     public boolean bindSurfaceInternal(SurfaceView surfaceView) {

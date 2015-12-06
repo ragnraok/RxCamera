@@ -22,7 +22,7 @@ Usage:
 2. open camera
 	
 	```Java
-		RxCamera.open(context, config)
+	RxCamera.open(context, config)
 	```
 	it return an RxJava Observable object, the type is ``Observable<RxCamera>``
 	

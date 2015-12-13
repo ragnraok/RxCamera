@@ -4,6 +4,14 @@ RxJava style camera API for android, it based on [android.hardware.camera](http:
 
 ----
 
+Add to your project dependence:
+
+```
+dependencies {
+	compile 'com.ragnarok.rxcamera:lib:0.0.1'
+}
+```
+
 Usage:
 
 1. set the camera parameter by choose a [RxCameraConfig](https://github.com/ragnraok/RxCamera/blob/master/lib/src/main/java/com/ragnarok/rxcamera/config/RxCameraConfig.java), which created by [RxCameraConfigChooser](https://github.com/ragnraok/RxCamera/blob/master/lib/src/main/java/com/ragnarok/rxcamera/config/RxCameraConfigChooser.java):

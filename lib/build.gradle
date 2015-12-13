@@ -7,6 +7,10 @@ buildscript {
     }
 }
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+version = "0.0.1"
 
 repositories {
     jcenter()
@@ -15,12 +19,13 @@ repositories {
 android {
     compileSdkVersion 22
     buildToolsVersion "23.0.1"
+    resourcePrefix "ragnarok"
 
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0"
+        versionName "0.0.1"
     }
     buildTypes {
         release {
@@ -33,4 +38,70 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'io.reactivex:rxandroid:1.0.1'
+}
+
+def siteUrl = 'https://github.com/ragnraok/RxCamera'
+def gitUrl = 'https://github.com/ragnraok/RxCamera'
+group = "com.ragnarok.rxcamera"
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'aar'
+                name 'RxJava style API for android camera'
+                url siteUrl
+                // Set your license
+                licenses {
+                    license {
+                        name 'The MIT License (MIT)'
+                        url 'https://github.com/ragnraok/RxCamera/blob/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'ragnarok'
+                        name 'RagnarokStack'
+                        email 'okone1288@gmail.com'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = "RxCamera"
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["MIT"]
+        publish = true
+    }
 }

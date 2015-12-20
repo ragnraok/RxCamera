@@ -7,6 +7,9 @@ RxJava style camera API for android, it based on [android.hardware.camera](http:
 Add to your project dependence:
 
 ```
+repositories {
+        jcenter()
+}
 dependencies {
 	compile 'com.ragnarok.rxcamera:lib:0.0.1'
 }

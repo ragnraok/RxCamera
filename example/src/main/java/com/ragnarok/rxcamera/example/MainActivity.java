@@ -179,6 +179,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_zoom:
                 actionZoom();
                 break;
+            case R.id.action_smooth_zoom:
+                actionSmoothZoom();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -262,6 +265,28 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         camera.action().zoom(10).subscribe(new Subscriber<RxCamera>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, "zoom error: " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(RxCamera rxCamera) {
+                Log.d(TAG, "zoom success: " + rxCamera);
+            }
+        });
+    }
+
+    private void actionSmoothZoom() {
+        if (!checkCamera()) {
+            return;
+        }
+        camera.action().smoothZoom(10).subscribe(new Subscriber<RxCamera>() {
             @Override
             public void onCompleted() {
 

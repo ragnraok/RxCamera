@@ -8,4 +8,5 @@
     <string name="action_one_shot">OneShotRequest</string>
     <string name="action_take_picture">TakePictureRequest</string>
     <string name="action_zoom">Zoom</string>
+    <string name="action_smooth_zoom">Smooth Zoom</string>
 </resources>

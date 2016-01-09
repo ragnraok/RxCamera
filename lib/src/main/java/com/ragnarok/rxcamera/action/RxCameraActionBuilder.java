@@ -44,4 +44,29 @@ public class RxCameraActionBuilder {
             }
         });
     }
+
+    /**
+     * smooth zoom the camera, which will gradually change the preview content
+     * @param level
+     * @return
+     */
+    public Observable<RxCamera> smoothZoom(final int level) {
+        return Observable.create(new Observable.OnSubscribe<RxCamera>() {
+            @Override
+            public void call(Subscriber<? super RxCamera> subscriber) {
+                Camera.Parameters parameters = rxCamera.getNativeCamera().getParameters();
+                if (!parameters.isZoomSupported() || !parameters.isSmoothZoomSupported()) {
+                    subscriber.onError(new ZoomFailedException(ZoomFailedException.Reason.ZOOM_NOT_SUPPORT));
+                    return;
+                }
+                int maxZoomLevel = parameters.getMaxZoom();
+                if (level < 0 || level > maxZoomLevel) {
+                    subscriber.onError(new ZoomFailedException(ZoomFailedException.Reason.ZOOM_RANGE_ERROR));
+                    return;
+                }
+                rxCamera.getNativeCamera().startSmoothZoom(level);
+                subscriber.onNext(rxCamera);
+            }
+        });
+    }
 }

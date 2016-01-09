@@ -7,6 +7,7 @@ import android.hardware.Camera;
 import android.view.SurfaceView;
 import android.view.TextureView;
 
+import com.ragnarok.rxcamera.action.RxCameraActionBuilder;
 import com.ragnarok.rxcamera.config.RxCameraConfig;
 import com.ragnarok.rxcamera.request.RxCameraRequestBuilder;
 
@@ -180,6 +181,14 @@ public class RxCamera  {
      */
     public RxCameraRequestBuilder request() {
         return new RxCameraRequestBuilder(this);
+    }
+
+    /**
+     * return a {@link RxCameraActionBuilder} which you can change the camera parameter in the fly
+     * @return
+     */
+    public RxCameraActionBuilder action() {
+        return new RxCameraActionBuilder(this);
     }
 
     /**

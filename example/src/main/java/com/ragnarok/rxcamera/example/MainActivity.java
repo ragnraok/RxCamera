@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNext(RxCamera rxCamera) {
+            public void onNext(final RxCamera rxCamera) {
                 camera = rxCamera;
                 showLog("open camera success: " + camera);
             }
@@ -175,6 +175,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.action_take_picture:
                 requestTakePicture();
+                break;
+            case R.id.action_zoom:
+                actionZoom();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -250,6 +253,28 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 showLog("Save file on " + path);
+            }
+        });
+    }
+
+    private void actionZoom() {
+        if (!checkCamera()) {
+            return;
+        }
+        camera.action().zoom(10).subscribe(new Subscriber<RxCamera>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, "zoom error: " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(RxCamera rxCamera) {
+                Log.d(TAG, "zoom success: " + rxCamera);
             }
         });
     }

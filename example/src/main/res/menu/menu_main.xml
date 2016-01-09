@@ -11,4 +11,6 @@
         app:showAsAction="collapseActionView"/>
     <item android:id="@+id/action_take_picture" android:title="@string/action_take_picture"
         app:showAsAction="collapseActionView"/>
+    <item android:id="@+id/action_zoom" android:title="@string/action_zoom"
+        app:showAsAction="collapseActionView"/>
 </menu>

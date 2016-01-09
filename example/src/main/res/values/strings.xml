@@ -7,4 +7,5 @@
     <string name="action_periodic_data">PeriodicDataRequest</string>
     <string name="action_one_shot">OneShotRequest</string>
     <string name="action_take_picture">TakePictureRequest</string>
+    <string name="action_zoom">Zoom</string>
 </resources>

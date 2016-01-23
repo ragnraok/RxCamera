@@ -43,12 +43,37 @@ public class RxCameraRequestBuilder {
     }
 
     /**
-     * take picture request, after call, will stop camera preview just like {@code Camera.takePicture}
+     * take picture request with default picture format and size, after call, will stop camera preview just like {@code Camera.takePicture}
      * @param isContinuePreview if continue preview after picture is captured
      * @param shutterAction call when the image is captured, it will be invoked before retrieve the actual image data
      * @return
      */
     public Observable<RxCameraData> takePictureRequest(boolean isContinuePreview, Func shutterAction) {
         return new TakePictureRequest(rxCamera, shutterAction, isContinuePreview).get();
+    }
+
+    /**
+     * take picture request with specific size, after call, will stop camera preview just like {@code Camera.takePicture}
+     * @param isContinuePreview if continue preview after picture is captured
+     * @param shutterAction
+     * @param width
+     * @param height
+     * @return
+     */
+    public Observable<RxCameraData> takePictureRequest(boolean isContinuePreview, Func shutterAction, int width, int height) {
+        return new TakePictureRequest(rxCamera, shutterAction, isContinuePreview, width, height, -1).get();
+    }
+
+    /**
+     * take picture request with specific size and picture format, after call, will stop camera preview just like {@code Camera.takePicture}
+     * @param isContinuePreview if continue preview after picture is captured
+     * @param shutterAction
+     * @param width
+     * @param height
+     * @param format the final format of the picture, must be one of <var>ImageFormat.NV21</var>, <var>ImageFormat.RGB_565</var>, or <var>ImageFormat.JPEG</var>, the default is JPG
+     * @return
+     */
+    public Observable<RxCameraData> takePictureRequest(boolean isContinuePreview, Func shutterAction, int width, int height, int format) {
+        return new TakePictureRequest(rxCamera, shutterAction, isContinuePreview, width, height, format).get();
     }
 }

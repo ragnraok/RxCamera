@@ -18,10 +18,21 @@ public class TakePictureRequest extends BaseRxCameraRequest {
     private Func shutterAction;
     private boolean isContinuePreview;
 
+    private int pictureFormat = -1;
+    private int pictureWidth = -1;
+    private int pictureHeight = -1;
+
     public TakePictureRequest(RxCamera rxCamera, Func shutterAction, boolean isContinuePreview) {
+        this(rxCamera, shutterAction, isContinuePreview, -1, -1, -1);
+    }
+
+    public TakePictureRequest(RxCamera rxCamera, Func shutterAction, boolean isContinuePreview, int width, int height, int format) {
         super(rxCamera);
         this.shutterAction = shutterAction;
-        this.isContinuePreview = true;
+        this.isContinuePreview = isContinuePreview;
+        this.pictureWidth = width;
+        this.pictureHeight = height;
+        this.pictureFormat = format;
     }
 
     @Override
@@ -29,6 +40,29 @@ public class TakePictureRequest extends BaseRxCameraRequest {
         return Observable.create(new Observable.OnSubscribe<RxCameraData>() {
             @Override
             public void call(final Subscriber<? super RxCameraData> subscriber) {
+                try {
+                    Camera.Parameters param = rxCamera.getNativeCamera().getParameters();
+                    // set the picture format
+                    if (pictureFormat != -1) {
+                        param.setPictureFormat(pictureFormat);
+                    }
+                    rxCamera.getNativeCamera().setParameters(param);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    Camera.Parameters param = rxCamera.getNativeCamera().getParameters();
+                    // set the picture size
+                    if (pictureWidth != -1 && pictureHeight != -1) {
+                        param.setPictureSize(pictureWidth, pictureHeight);
+                    }
+                    rxCamera.getNativeCamera().setParameters(param);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
                 rxCamera.getNativeCamera().takePicture(new Camera.ShutterCallback() {
                     @Override
                     public void onShutter() {

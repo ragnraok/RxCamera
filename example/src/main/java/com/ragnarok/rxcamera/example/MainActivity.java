@@ -2,6 +2,7 @@ package com.ragnarok.rxcamera.example;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -239,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
             public void call() {
                 showLog("Captured!");
             }
-        }).subscribe(new Action1<RxCameraData>() {
+        }, 480, 640, ImageFormat.JPEG).subscribe(new Action1<RxCameraData>() {
             @Override
             public void call(RxCameraData rxCameraData) {
                 String path = Environment.getExternalStorageDirectory() + "/test.jpg";

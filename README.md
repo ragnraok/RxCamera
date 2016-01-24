@@ -11,7 +11,7 @@ repositories {
         jcenter()
 }
 dependencies {
-	compile 'com.ragnarok.rxcamera:lib:0.0.1'
+	compile 'com.ragnarok.rxcamera:lib:0.0.2'
 }
 ```
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id=":lib" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="com.ragnarok.rxcamera" external.system.module.version="0.0.2" type="JAVA_MODULE" version="4">
+<module external.linked.project.id=":rxCamera" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/../../../pontetelapp" external.system.id="GRADLE" external.system.module.group="com.ragnarok.rxcamera" external.system.module.version="0.0.2" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="android-gradle" name="Android-Gradle">
       <configuration>
-        <option name="GRADLE_PROJECT_PATH" value=":lib" />
+        <option name="GRADLE_PROJECT_PATH" value=":rxCamera" />
       </configuration>
     </facet>
     <facet type="android" name="Android">
@@ -81,7 +81,6 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.0.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/lint" />

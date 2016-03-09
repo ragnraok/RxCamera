@@ -22,7 +22,7 @@ android {
     resourcePrefix "ragnarok"
 
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 14
         targetSdkVersion 23
         versionCode 1
         versionName "0.0.2"

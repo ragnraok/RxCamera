@@ -3,8 +3,10 @@ package com.ragnarok.rxcamera;
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 
@@ -298,6 +300,7 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
         try {
             bindSurfaceView = surfaceView;
             if (cameraConfig.isHandleSurfaceEvent) {
+                surfaceCallback.setSurfaceListener(this);
                 bindSurfaceView.getHolder().addCallback(surfaceCallback);
             }
             if (surfaceView.getHolder() != null) {
@@ -324,6 +327,7 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
         try {
             bindTextureView = textureView;
             if (cameraConfig.isHandleSurfaceEvent) {
+                surfaceCallback.setSurfaceListener(this);
                 bindTextureView.setSurfaceTextureListener(surfaceCallback);
             }
             if (bindTextureView.getSurfaceTexture() != null) {
@@ -381,15 +385,29 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
     }
 
     @Override
-    public void onAvailable() {
+    public void onAvailable(SurfaceHolder holder) {
         if (isNeedStartPreviewLater) {
             try {
+                camera.setPreviewDisplay(holder);
                 camera.startPreview();
             } catch (Exception e) {
                 Log.e(TAG, "onAvailable, start preview failed");
             }
         }
     }
+
+    @Override
+    public void onAvailable(SurfaceTexture surface) {
+        if (isNeedStartPreviewLater) {
+            try {
+                camera.setPreviewTexture(surface);
+                camera.startPreview();
+            } catch (Exception e) {
+                Log.e(TAG, "onAvailable, start preview failed");
+            }
+        }
+    }
+
 
     @Override
     public void onDestroy() {

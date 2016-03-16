@@ -10,13 +10,14 @@ import android.view.TextureView;
 /* package */ class SurfaceCallback implements SurfaceHolder.Callback, TextureView.SurfaceTextureListener {
 
     public interface SurfaceListener {
-        void onAvailable();
+        void onAvailable(SurfaceHolder holder);
+        void onAvailable(SurfaceTexture surface);
         void onDestroy();
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        onSurfaceAvailable();
+        onSurfaceAvailable(holder);
     }
 
     @Override
@@ -31,7 +32,7 @@ import android.view.TextureView;
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        onSurfaceAvailable();
+        onSurfaceAvailable(surface);
     }
 
     @Override
@@ -50,9 +51,15 @@ import android.view.TextureView;
 
     }
 
-    public void onSurfaceAvailable() {
+    public void onSurfaceAvailable(SurfaceHolder holder) {
         if (listener != null) {
-            listener.onAvailable();
+            listener.onAvailable(holder);
+        }
+    }
+
+    public void onSurfaceAvailable(SurfaceTexture surface) {
+        if (listener != null) {
+            listener.onAvailable(surface);
         }
     }
 

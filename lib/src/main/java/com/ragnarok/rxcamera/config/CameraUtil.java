@@ -51,11 +51,11 @@ public class CameraUtil {
         return null;
     }
 
-    public boolean hasFrontCamera() {
+    public static boolean hasFrontCamera() {
         return getFrontCameraId() != -1;
     }
 
-    public boolean hasBackCamera() {
+    public static boolean hasBackCamera() {
         return getBackCameraId() != -1;
     }
 

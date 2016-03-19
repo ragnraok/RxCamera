@@ -1,6 +1,7 @@
 package com.ragnarok.rxcamera;
 
 import android.graphics.SurfaceTexture;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
 
@@ -10,19 +11,17 @@ import android.view.TextureView;
 /* package */ class SurfaceCallback implements SurfaceHolder.Callback, TextureView.SurfaceTextureListener {
 
     public interface SurfaceListener {
-        void onAvailable(SurfaceHolder holder);
-        void onAvailable(SurfaceTexture surface);
+        void onAvailable();
         void onDestroy();
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        onSurfaceAvailable(holder);
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        onSurfaceAvailable();
     }
 
     @Override
@@ -32,7 +31,7 @@ import android.view.TextureView;
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        onSurfaceAvailable(surface);
+        onSurfaceAvailable();
     }
 
     @Override
@@ -51,17 +50,12 @@ import android.view.TextureView;
 
     }
 
-    public void onSurfaceAvailable(SurfaceHolder holder) {
+    public void onSurfaceAvailable() {
         if (listener != null) {
-            listener.onAvailable(holder);
+            listener.onAvailable();
         }
     }
 
-    public void onSurfaceAvailable(SurfaceTexture surface) {
-        if (listener != null) {
-            listener.onAvailable(surface);
-        }
-    }
 
     public void onSurfaceDestroy() {
         if (listener != null) {

@@ -15,4 +15,8 @@
         app:showAsAction="collapseActionView"/>
     <item android:id="@+id/action_smooth_zoom" android:title="@string/action_smooth_zoom"
         app:showAsAction="collapseActionView"/>
+    <item android:id="@+id/action_open_flash" android:title="@string/action_open_flash"
+        app:showAsAction="collapseActionView"/>
+    <item android:id="@+id/action_close_flash" android:title="@string/action_close_flash"
+        app:showAsAction="collapseActionView"/>
 </menu>

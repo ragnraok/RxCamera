@@ -3,6 +3,7 @@ package com.ragnarok.rxcamera.action;
 import android.hardware.Camera;
 
 import com.ragnarok.rxcamera.RxCamera;
+import com.ragnarok.rxcamera.error.SettingFlashException;
 import com.ragnarok.rxcamera.error.ZoomFailedException;
 
 import rx.Observable;
@@ -69,4 +70,37 @@ public class RxCameraActionBuilder {
             }
         });
     }
+
+    public Observable<RxCamera> flashAction(final boolean isOn) {
+        return Observable.create(new Observable.OnSubscribe<RxCamera>() {
+            @Override
+            public void call(Subscriber<? super RxCamera> subscriber) {
+                Camera.Parameters parameters = rxCamera.getNativeCamera().getParameters();
+                if (parameters.getSupportedFlashModes() == null || parameters.getSupportedFlashModes().size() <= 0) {
+                    subscriber.onError(new SettingFlashException("Flash not support"));
+                    return;
+                }
+                if (isOn) {
+                    if (parameters.getSupportedFlashModes().contains(Camera.Parameters.FLASH_MODE_TORCH)) {
+                        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                        rxCamera.getNativeCamera().setParameters(parameters);
+                        subscriber.onNext(rxCamera);
+                        return;
+                    } else {
+                        subscriber.onError(new SettingFlashException("Flash not support"));
+                    }
+                } else {
+                    if (parameters.getSupportedFlashModes().contains(Camera.Parameters.FLASH_MODE_OFF)) {
+                        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                        rxCamera.getNativeCamera().setParameters(parameters);
+                        subscriber.onNext(rxCamera);
+                    } else {
+                        subscriber.onError(new SettingFlashException("Flash not support"));
+                    }
+                }
+            }
+        });
+    }
+
+
 }

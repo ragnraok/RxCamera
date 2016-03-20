@@ -183,6 +183,12 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_smooth_zoom:
                 actionSmoothZoom();
                 break;
+            case R.id.action_open_flash:
+                actionOpenFlash();
+                break;
+            case R.id.action_close_flash:
+                actionCloseFlash();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -301,6 +307,50 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNext(RxCamera rxCamera) {
                 showLog("zoom success: " + rxCamera);
+            }
+        });
+    }
+
+    private void actionOpenFlash() {
+        if (!checkCamera()) {
+            return;
+        }
+        camera.action().flashAction(true).subscribe(new Subscriber<RxCamera>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                showLog("open flash error: " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(RxCamera rxCamera) {
+                showLog("open flash");
+            }
+        });
+    }
+
+    private void actionCloseFlash() {
+        if (!checkCamera()) {
+            return;
+        }
+        camera.action().flashAction(false).subscribe(new Subscriber<RxCamera>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                showLog("close flash error: " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(RxCamera rxCamera) {
+                showLog("close flash");
             }
         });
     }

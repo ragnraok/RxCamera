@@ -273,12 +273,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable e) {
-                Log.d(TAG, "zoom error: " + e.getMessage());
+                showLog("zoom error: " + e.getMessage());
             }
 
             @Override
             public void onNext(RxCamera rxCamera) {
-                Log.d(TAG, "zoom success: " + rxCamera);
+                showLog("zoom success: " + rxCamera);
             }
         });
     }
@@ -295,12 +295,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable e) {
-                Log.d(TAG, "zoom error: " + e.getMessage());
+                showLog("zoom error: " + e.getMessage());
             }
 
             @Override
             public void onNext(RxCamera rxCamera) {
-                Log.d(TAG, "zoom success: " + rxCamera);
+                showLog("zoom success: " + rxCamera);
             }
         });
     }

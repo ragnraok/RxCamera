@@ -6,6 +6,8 @@ import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
 import com.ragnarok.rxcamera.error.TakePictureFailedException;
 
+import java.util.List;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action1;
@@ -22,17 +24,24 @@ public class TakePictureRequest extends BaseRxCameraRequest {
     private int pictureWidth = -1;
     private int pictureHeight = -1;
 
+    private boolean openFlash = false;
+
     public TakePictureRequest(RxCamera rxCamera, Func shutterAction, boolean isContinuePreview) {
-        this(rxCamera, shutterAction, isContinuePreview, -1, -1, -1);
+        this(rxCamera, shutterAction, isContinuePreview, false);
     }
 
-    public TakePictureRequest(RxCamera rxCamera, Func shutterAction, boolean isContinuePreview, int width, int height, int format) {
+    public TakePictureRequest(RxCamera rxCamera, Func shutterAction, boolean isContinuePreview, boolean openFlash) {
+        this(rxCamera, shutterAction, isContinuePreview, -1, -1, -1, openFlash);
+    }
+
+    public TakePictureRequest(RxCamera rxCamera, Func shutterAction, boolean isContinuePreview, int width, int height, int format, boolean openFlash) {
         super(rxCamera);
         this.shutterAction = shutterAction;
         this.isContinuePreview = isContinuePreview;
         this.pictureWidth = width;
         this.pictureHeight = height;
         this.pictureFormat = format;
+        this.openFlash = openFlash;
     }
 
     @Override
@@ -55,13 +64,29 @@ public class TakePictureRequest extends BaseRxCameraRequest {
                     Camera.Parameters param = rxCamera.getNativeCamera().getParameters();
                     // set the picture size
                     if (pictureWidth != -1 && pictureHeight != -1) {
-                        param.setPictureSize(pictureWidth, pictureHeight);
+                        Camera.Size size = findClosetPictureSize(param.getSupportedPictureSizes(), pictureWidth, pictureHeight);
+                        if (size != null) {
+                            param.setPictureSize(size.width, size.height);
+                        }
                     }
+
+                    if (openFlash) {
+                        if (param.getSupportedFlashModes() != null &&
+                                param.getSupportedFlashModes().contains(Camera.Parameters.FLASH_MODE_ON)) {
+                            param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+                        }
+                    }
+
                     rxCamera.getNativeCamera().setParameters(param);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 rxCamera.getNativeCamera().takePicture(new Camera.ShutterCallback() {
                     @Override
@@ -94,6 +119,16 @@ public class TakePictureRequest extends BaseRxCameraRequest {
                             rxCameraData.rotateMatrix = rxCamera.getRotateMatrix();
                             subscriber.onNext(rxCameraData);
 
+                            // should close flash
+                            if (openFlash) {
+                                Camera.Parameters param = rxCamera.getNativeCamera().getParameters();
+                                if (param.getSupportedFlashModes() != null &&
+                                        param.getSupportedFlashModes().contains(Camera.Parameters.FLASH_MODE_OFF)) {
+                                    param.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                                }
+                                rxCamera.getNativeCamera().setParameters(param);
+                            }
+
                         } else {
                             subscriber.onError(new TakePictureFailedException("cannot get take picture data"));
                         }
@@ -101,5 +136,21 @@ public class TakePictureRequest extends BaseRxCameraRequest {
                 });
             }
         });
+    }
+
+    private Camera.Size findClosetPictureSize(List<Camera.Size> sizeList, int width, int height) {
+        if (sizeList == null || sizeList.size() <= 0) {
+            return null;
+        }
+        int minDiff = Integer.MAX_VALUE;
+        Camera.Size bestSize = null;
+        for (Camera.Size size : sizeList) {
+            int diff = Math.abs(size.width - width) + Math.abs(size.height);
+            if (diff < minDiff) {
+                minDiff = diff;
+                bestSize = size;
+            }
+        }
+        return bestSize;
     }
 }

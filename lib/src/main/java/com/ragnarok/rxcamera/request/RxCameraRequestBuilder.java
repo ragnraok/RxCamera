@@ -58,10 +58,11 @@ public class RxCameraRequestBuilder {
      * @param shutterAction
      * @param width
      * @param height
+     * @param openFlash will open the flash when taking picture if set to true
      * @return
      */
-    public Observable<RxCameraData> takePictureRequest(boolean isContinuePreview, Func shutterAction, int width, int height) {
-        return new TakePictureRequest(rxCamera, shutterAction, isContinuePreview, width, height, -1).get();
+    public Observable<RxCameraData> takePictureRequest(boolean isContinuePreview, Func shutterAction, int width, int height, boolean openFlash) {
+        return new TakePictureRequest(rxCamera, shutterAction, isContinuePreview, width, height, -1, openFlash).get();
     }
 
     /**
@@ -71,9 +72,12 @@ public class RxCameraRequestBuilder {
      * @param width
      * @param height
      * @param format the final format of the picture, must be one of <var>ImageFormat.NV21</var>, <var>ImageFormat.RGB_565</var>, or <var>ImageFormat.JPEG</var>, the default is JPG
+     * @param openFlash will open the flash when taking picture if set to true
      * @return
      */
-    public Observable<RxCameraData> takePictureRequest(boolean isContinuePreview, Func shutterAction, int width, int height, int format) {
-        return new TakePictureRequest(rxCamera, shutterAction, isContinuePreview, width, height, format).get();
+    public Observable<RxCameraData> takePictureRequest(boolean isContinuePreview, Func shutterAction, int width, int height, int format, boolean openFlash) {
+        return new TakePictureRequest(rxCamera, shutterAction, isContinuePreview, width, height, format, openFlash).get();
     }
+
+
 }

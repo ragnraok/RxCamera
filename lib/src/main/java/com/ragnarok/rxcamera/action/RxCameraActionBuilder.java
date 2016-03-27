@@ -3,8 +3,12 @@ package com.ragnarok.rxcamera.action;
 import android.hardware.Camera;
 
 import com.ragnarok.rxcamera.RxCamera;
+import com.ragnarok.rxcamera.error.SettingAreaFocusError;
 import com.ragnarok.rxcamera.error.SettingFlashException;
+import com.ragnarok.rxcamera.error.SettingMeterAreaError;
 import com.ragnarok.rxcamera.error.ZoomFailedException;
+
+import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -102,5 +106,42 @@ public class RxCameraActionBuilder {
         });
     }
 
+    public Observable<RxCamera> areaFocusAction(final List<Camera.Area> focusAreaList) {
+        if (focusAreaList == null || focusAreaList.size() == 0) {
+            return null;
+        }
+        return Observable.create(new Observable.OnSubscribe<RxCamera>() {
+            @Override
+            public void call(Subscriber<? super RxCamera> subscriber) {
+                Camera.Parameters parameters = rxCamera.getNativeCamera().getParameters();
+                if (parameters.getMaxNumFocusAreas() < focusAreaList.size()) {
+                    subscriber.onError(new SettingAreaFocusError("area focus not supported!"));
+                } else {
+                    parameters.setFocusAreas(focusAreaList);
+                    rxCamera.getNativeCamera().setParameters(parameters);
+                    subscriber.onNext(rxCamera);
+                }
+            }
+        });
+    }
+
+    public Observable<RxCamera> areaMeterAction(final List<Camera.Area> meterAreaList) {
+        if (meterAreaList == null || meterAreaList.size() == 0) {
+            return null;
+        }
+        return Observable.create(new Observable.OnSubscribe<RxCamera>() {
+            @Override
+            public void call(Subscriber<? super RxCamera> subscriber) {
+                Camera.Parameters parameters = rxCamera.getNativeCamera().getParameters();
+                if (parameters.getMaxNumMeteringAreas() < meterAreaList.size()) {
+                    subscriber.onError(new SettingMeterAreaError("meter focus not supported!"));
+                } else {
+                    parameters.setFocusAreas(meterAreaList);
+                    rxCamera.getNativeCamera().setParameters(parameters);
+                    subscriber.onNext(rxCamera);
+                }
+            }
+        });
+    }
 
 }

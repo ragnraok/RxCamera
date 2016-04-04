@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.util.Log;
+import android.util.Size;
 import android.view.Surface;
 import android.view.WindowManager;
 
@@ -164,6 +165,27 @@ public class CameraUtil {
         String result = "";
         for (Camera.Size size : sizes) {
             result += "(" + size.width + "," + size.height + ") ";
+        }
+        return result;
+    }
+
+    public static Rect transferCameraAreaFromOuterSize(Point center, Point outerSize, int size) {
+        int left = clampAreaCoord((int) (center.x / (float)(outerSize.x) * 2000 - 1000), size);
+        int top = clampAreaCoord((int) (center.y / (float)(outerSize.y) * 2000 - 1000), size);
+
+        return new Rect(left, top, left + size, top + size);
+    }
+
+    private static int clampAreaCoord(int center, int focusAreaSize) {
+        int result;
+        if (Math.abs(center) + focusAreaSize / 2 > 1000) {
+            if (center > 0) {
+                result = 1000 - focusAreaSize / 2;
+            } else {
+                result = -1000 + focusAreaSize / 2;
+            }
+        } else {
+            result = center - focusAreaSize / 2;
         }
         return result;
     }

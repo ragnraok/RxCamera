@@ -5,14 +5,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -27,12 +22,12 @@ import android.widget.TextView;
 
 import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
+import com.ragnarok.rxcamera.config.CameraUtil;
 import com.ragnarok.rxcamera.config.RxCameraConfig;
 import com.ragnarok.rxcamera.config.RxCameraConfigChooser;
 import com.ragnarok.rxcamera.request.Func;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
@@ -40,13 +35,10 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -103,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     final float x = event.getX();
                     final float y = event.getY();
-                    final Rect rect = calculateFocusArea(x, y);
+                    final Rect rect = CameraUtil.transferCameraAreaFromOuterSize(new Point((int)x, (int)y),
+                            new Point(textureView.getWidth(), textureView.getHeight()), 100);
                     List<Camera.Area> areaList = Collections.singletonList(new Camera.Area(rect, 1000));
                     Observable.zip(camera.action().areaFocusAction(areaList),
                             camera.action().areaMeterAction(areaList),
@@ -132,28 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-    }
 
-    private Rect calculateFocusArea(float x, float y) {
-        int size = 100;
-        int left = clamp((int) (x / (float)textureView.getWidth() * 2000 - 1000), size);
-        int top = clamp((int) (y / (float)textureView.getHeight() * 2000 - 1000), size);
-
-        return new Rect(left, top, left + size, top + size);
-    }
-
-    private int clamp(int center, int focusAreaSize) {
-        int result;
-        if (Math.abs(center) + focusAreaSize / 2 > 1000) {
-            if (center > 0) {
-                result = 1000 - focusAreaSize / 2;
-            } else {
-                result = -1000 + focusAreaSize / 2;
-            }
-        } else {
-            result = center - focusAreaSize / 2;
-        }
-        return result;
     }
 
 
@@ -428,5 +400,4 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
-
 }

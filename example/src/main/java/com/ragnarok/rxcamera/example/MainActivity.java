@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +35,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -41,6 +45,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -88,7 +93,69 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        textureView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (!checkCamera()) {
+                    return false;
+                }
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    final float x = event.getX();
+                    final float y = event.getY();
+                    final Rect rect = calculateFocusArea(x, y);
+                    List<Camera.Area> areaList = Collections.singletonList(new Camera.Area(rect, 1000));
+                    Observable.zip(camera.action().areaFocusAction(areaList),
+                            camera.action().areaMeterAction(areaList),
+                            new Func2<RxCamera, RxCamera, Object>() {
+                                @Override
+                                public Object call(RxCamera rxCamera, RxCamera rxCamera2) {
+                                    return rxCamera;
+                                }
+                            }).subscribe(new Subscriber<Object>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            showLog("area focus and metering failed: " + e.getMessage());
+                        }
+
+                        @Override
+                        public void onNext(Object o) {
+                            showLog(String.format("area focus and metering success, x: %s, y: %s, area: %s", x, y, rect.toShortString()));
+                        }
+                    });
+                }
+                return false;
+            }
+        });
     }
+
+    private Rect calculateFocusArea(float x, float y) {
+        int size = 100;
+        int left = clamp((int) (x / (float)textureView.getWidth() * 2000 - 1000), size);
+        int top = clamp((int) (y / (float)textureView.getHeight() * 2000 - 1000), size);
+
+        return new Rect(left, top, left + size, top + size);
+    }
+
+    private int clamp(int center, int focusAreaSize) {
+        int result;
+        if (Math.abs(center) + focusAreaSize / 2 > 1000) {
+            if (center > 0) {
+                result = 1000 - focusAreaSize / 2;
+            } else {
+                result = -1000 + focusAreaSize / 2;
+            }
+        } else {
+            result = center - focusAreaSize / 2;
+        }
+        return result;
+    }
+
 
     private void openCamera() {
         RxCameraConfig config = RxCameraConfigChooser.obtain().

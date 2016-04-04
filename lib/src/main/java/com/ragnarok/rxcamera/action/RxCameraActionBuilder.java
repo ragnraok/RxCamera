@@ -112,14 +112,29 @@ public class RxCameraActionBuilder {
         }
         return Observable.create(new Observable.OnSubscribe<RxCamera>() {
             @Override
-            public void call(Subscriber<? super RxCamera> subscriber) {
+            public void call(final Subscriber<? super RxCamera> subscriber) {
                 Camera.Parameters parameters = rxCamera.getNativeCamera().getParameters();
                 if (parameters.getMaxNumFocusAreas() < focusAreaList.size()) {
                     subscriber.onError(new SettingAreaFocusError("area focus not supported!"));
                 } else {
+                    if (parameters.getFocusMode() != Camera.Parameters.FOCUS_MODE_AUTO) {
+                        List<String> focusModes = parameters.getSupportedFocusModes();
+                        if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
+                            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                        }
+                    }
                     parameters.setFocusAreas(focusAreaList);
                     rxCamera.getNativeCamera().setParameters(parameters);
-                    subscriber.onNext(rxCamera);
+                    rxCamera.getNativeCamera().autoFocus(new Camera.AutoFocusCallback() {
+                        @Override
+                        public void onAutoFocus(boolean success, Camera camera) {
+                            if (success) {
+                                subscriber.onNext(rxCamera);
+                            } else {
+                                subscriber.onError(new SettingAreaFocusError("set area focus failed"));
+                            }
+                        }
+                    });
                 }
             }
         });

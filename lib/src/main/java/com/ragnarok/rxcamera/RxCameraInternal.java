@@ -163,9 +163,7 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
         if (cameraConfig.isAutoFocus) {
             try {
                 List<String> focusModes = parameters.getSupportedFocusModes();
-                if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
-                    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-                } else if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
+                if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                     parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
                 }
             } catch (Exception e) {

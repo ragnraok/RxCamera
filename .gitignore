@@ -45,5 +45,5 @@ proguard/
 .signing/
  
 # User-specific configurations
- .idea/
- *.iml
+.idea/
+*.iml

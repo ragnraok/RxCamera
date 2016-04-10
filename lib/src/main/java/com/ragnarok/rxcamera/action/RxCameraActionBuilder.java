@@ -81,7 +81,7 @@ public class RxCameraActionBuilder {
             public void call(Subscriber<? super RxCamera> subscriber) {
                 Camera.Parameters parameters = rxCamera.getNativeCamera().getParameters();
                 if (parameters.getSupportedFlashModes() == null || parameters.getSupportedFlashModes().size() <= 0) {
-                    subscriber.onError(new SettingFlashException("Flash not support"));
+                    subscriber.onError(new SettingFlashException(SettingFlashException.Reason.NOT_SUPPORT));
                     return;
                 }
                 if (isOn) {
@@ -91,7 +91,7 @@ public class RxCameraActionBuilder {
                         subscriber.onNext(rxCamera);
                         return;
                     } else {
-                        subscriber.onError(new SettingFlashException("Flash not support"));
+                        subscriber.onError(new SettingFlashException(SettingFlashException.Reason.NOT_SUPPORT));
                     }
                 } else {
                     if (parameters.getSupportedFlashModes().contains(Camera.Parameters.FLASH_MODE_OFF)) {
@@ -99,7 +99,7 @@ public class RxCameraActionBuilder {
                         rxCamera.getNativeCamera().setParameters(parameters);
                         subscriber.onNext(rxCamera);
                     } else {
-                        subscriber.onError(new SettingFlashException("Flash not support"));
+                        subscriber.onError(new SettingFlashException(SettingFlashException.Reason.NOT_SUPPORT));
                     }
                 }
             }
@@ -115,7 +115,7 @@ public class RxCameraActionBuilder {
             public void call(final Subscriber<? super RxCamera> subscriber) {
                 Camera.Parameters parameters = rxCamera.getNativeCamera().getParameters();
                 if (parameters.getMaxNumFocusAreas() < focusAreaList.size()) {
-                    subscriber.onError(new SettingAreaFocusError("area focus not supported!"));
+                    subscriber.onError(new SettingAreaFocusError(SettingAreaFocusError.Reason.NOT_SUPPORT));
                 } else {
                     if (parameters.getFocusMode() != Camera.Parameters.FOCUS_MODE_AUTO) {
                         List<String> focusModes = parameters.getSupportedFocusModes();
@@ -131,7 +131,7 @@ public class RxCameraActionBuilder {
                             if (success) {
                                 subscriber.onNext(rxCamera);
                             } else {
-                                subscriber.onError(new SettingAreaFocusError("set area focus failed"));
+                                subscriber.onError(new SettingAreaFocusError(SettingAreaFocusError.Reason.SET_AREA_FOCUS_FAILED));
                             }
                         }
                     });
@@ -149,7 +149,7 @@ public class RxCameraActionBuilder {
             public void call(Subscriber<? super RxCamera> subscriber) {
                 Camera.Parameters parameters = rxCamera.getNativeCamera().getParameters();
                 if (parameters.getMaxNumMeteringAreas() < meterAreaList.size()) {
-                    subscriber.onError(new SettingMeterAreaError("meter focus not supported!"));
+                    subscriber.onError(new SettingMeterAreaError(SettingMeterAreaError.Reason.NOT_SUPPORT));
                 } else {
                     parameters.setFocusAreas(meterAreaList);
                     rxCamera.getNativeCamera().setParameters(parameters);

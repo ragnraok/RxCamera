@@ -5,7 +5,17 @@ package com.ragnarok.rxcamera.error;
  */
 public class SettingFlashException extends Exception {
 
-    public SettingFlashException(String detailMessage) {
-        super(detailMessage);
+    public enum Reason {
+        NOT_SUPPORT,
+    }
+
+    private Reason reason;
+
+    public SettingFlashException(Reason reason) {
+        this.reason = reason;
+    }
+
+    public Reason getReason() {
+        return this.reason;
     }
 }

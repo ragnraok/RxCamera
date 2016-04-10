@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
             public void onNext(final RxCamera rxCamera) {
                 camera = rxCamera;
                 showLog("open camera success: " + camera);
+                Toast.makeText(MainActivity.this, "Now you can tap to focus", Toast.LENGTH_LONG).show();
             }
         });
 

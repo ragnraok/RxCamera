@@ -95,7 +95,7 @@ Usage:
 		and the ``shutterAction`` will called after picture just captured, like the [ShutterCallback]
 (http://developer.android.com/intl/es/reference/android/hardware/Camera.ShutterCallback.html) (actually it is called in the system shutterCallback)
 
-		and the ``openFlash`` if set to true, it will open the flash when taking picture, and automatically close after this request
+		and the ``openFlash`` if set to true, it will open the flash when taking picture, and automatically close it after this request
 		
 	all the data request will return an ``Observalbe<RxCameraData>``
 	

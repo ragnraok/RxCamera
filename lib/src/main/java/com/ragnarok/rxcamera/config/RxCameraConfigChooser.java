@@ -32,11 +32,12 @@ public class RxCameraConfigChooser {
         return this;
     }
 
-    public RxCameraConfigChooser setPreferPreviewSize(Point size) {
+    public RxCameraConfigChooser setPreferPreviewSize(Point size, boolean acceptSquarePreview) {
         if (size == null) {
             return this;
         }
         configResult.preferPreviewSize = size;
+        configResult.acceptSquarePreview = acceptSquarePreview;
         return this;
     }
 

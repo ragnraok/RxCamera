@@ -135,9 +135,16 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
         // set preview size;
         if (cameraConfig.preferPreviewSize != null) {
             try {
-                Camera.Size previewSize = CameraUtil.findClosetPreviewSize(camera, cameraConfig.preferPreviewSize);
-                parameters.setPreviewSize(previewSize.width, previewSize.height);
-                finalPreviewSize = new Point(previewSize.width, previewSize.height);
+                //check wether squared preview is accepted or not.
+                if(cameraConfig.acceptSquarePreview) {
+                    Camera.Size previewSize = CameraUtil.findClosestPreviewSize(camera, cameraConfig.preferPreviewSize);
+                    parameters.setPreviewSize(previewSize.width, previewSize.height);
+                    finalPreviewSize = new Point(previewSize.width, previewSize.height);
+                } else {
+                    Camera.Size previewSize = CameraUtil.findClosestNonSquarePreviewSize(camera, cameraConfig.preferPreviewSize);
+                    parameters.setPreviewSize(previewSize.width, previewSize.height);
+                    finalPreviewSize = new Point(previewSize.width, previewSize.height);
+                }
             } catch (Exception e) {
                 openCameraFailedReason = OpenCameraFailedReason.SET_PREVIEW_SIZE_FAILED;
                 openCameraFailedCause = e;

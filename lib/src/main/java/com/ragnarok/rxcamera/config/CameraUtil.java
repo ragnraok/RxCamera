@@ -137,7 +137,7 @@ public class CameraUtil {
         return result;
     }
 
-    public static Camera.Size findClosetPreviewSize(Camera camera, Point preferSize) {
+    public static Camera.Size findClosestPreviewSize(Camera camera, Point preferSize) {
         int preferX = preferSize.x;
         int preferY = preferSize.y;
         Camera.Parameters parameters = camera.getParameters();
@@ -154,6 +154,31 @@ public class CameraUtil {
             if (diff < minDiff) {
                 minDiff = diff;
                 index = i;
+            }
+        }
+
+        Camera.Size size = allSupportSizes.get(index);
+        return size;
+    }
+
+    public static Camera.Size findClosestNonSquarePreviewSize(Camera camera, Point preferSize) {
+        int preferX = preferSize.x;
+        int preferY = preferSize.y;
+        Camera.Parameters parameters = camera.getParameters();
+        List<Camera.Size> allSupportSizes = parameters.getSupportedPreviewSizes();
+        Log.d(TAG, "all support preview size: " + dumpPreviewSizeList(allSupportSizes));
+        int minDiff = Integer.MAX_VALUE;
+        int index = 0;
+        for (int i = 0; i < allSupportSizes.size(); i++) {
+            Camera.Size size = allSupportSizes.get(i);
+            int x = size.width;
+            int y = size.height;
+            if (x != y) {
+                int diff = Math.abs(x - preferX) + Math.abs(y - preferY);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    index = i;
+                }
             }
         }
 

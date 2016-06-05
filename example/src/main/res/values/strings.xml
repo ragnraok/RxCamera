@@ -11,4 +11,5 @@
     <string name="action_smooth_zoom">Smooth Zoom</string>
     <string name="action_open_flash">Open Flash</string>
     <string name="action_close_flash">Close Flash</string>
+    <string name="action_face_detection">Face Detection</string>
 </resources>

@@ -212,15 +212,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Now you can tap to focus", Toast.LENGTH_LONG).show();
             }
         });
-
-        camera.request().faceDetectionRequest().subscribe(new Action1<RxCameraData>() {
-            @Override
-            public void call(RxCameraData rxCameraData) {
-                showLog("on face detection: " + rxCameraData.faceList);
-            }
-        });
-
-
     }
 
     private void showLog(String s) {
@@ -279,6 +270,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_close_flash:
                 actionCloseFlash();
                 break;
+            case R.id.action_face_detection:
+                faceDetection();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -441,6 +434,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNext(RxCamera rxCamera) {
                 showLog("close flash");
+            }
+        });
+    }
+
+    private void faceDetection() {
+        camera.request().faceDetectionRequest().subscribe(new Action1<RxCameraData>() {
+            @Override
+            public void call(RxCameraData rxCameraData) {
+                showLog("on face detection: " + rxCameraData.faceList);
             }
         });
     }

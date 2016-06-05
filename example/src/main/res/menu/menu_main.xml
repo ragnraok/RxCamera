@@ -19,4 +19,6 @@
         app:showAsAction="collapseActionView"/>
     <item android:id="@+id/action_close_flash" android:title="@string/action_close_flash"
         app:showAsAction="collapseActionView"/>
+    <item android:id="@+id/action_face_detection" android:title="@string/action_face_detection"
+        app:showAsAction="collapseActionView"/>
 </menu>

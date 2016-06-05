@@ -1,5 +1,7 @@
 package com.ragnarok.rxcamera.request;
 
+import android.hardware.Camera;
+
 import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
 
@@ -83,6 +85,8 @@ public class RxCameraRequestBuilder {
     /**
      * the face detection request, after set this, the returned {@link RxCameraData#faceList} will contain the
      * faces position list
+     * this request use {@link Camera#startFaceDetection()}, so after setting this, the focus area the metering
+     * have no effect
      * @return
      */
     public Observable<RxCameraData> faceDetectionRequest() {

@@ -1,13 +1,18 @@
 package com.ragnarok.rxcamera.example;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,6 +50,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Example.MainActivity";
 
+    private static final String[] REQUEST_PERMISSIONS = new String[] {
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    private static final int REQUST_PERMISSION_CODE = 233;
+
     private TextureView textureView;
     private Button openCameraBtn;
     private Button closeCameraBtn;
@@ -69,7 +81,12 @@ public class MainActivity extends AppCompatActivity {
         openCameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openCamera();
+                if (!checkPermission()) {
+                    requestPermission();
+                } else {
+                    openCamera();
+                }
+
             }
         });
 
@@ -129,6 +146,31 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private boolean checkPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+        for (String permission : REQUEST_PERMISSIONS) {
+            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, REQUEST_PERMISSIONS, REQUST_PERMISSION_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUST_PERMISSION_CODE) {
+            if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            }
+        }
+    }
 
     private void openCamera() {
         RxCameraConfig config = RxCameraConfigChooser.obtain().

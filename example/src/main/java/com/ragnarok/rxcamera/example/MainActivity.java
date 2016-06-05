@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    private static final int REQUST_PERMISSION_CODE = 233;
+    private static final int REQUEST_PERMISSION_CODE = 233;
 
     private TextureView textureView;
     private Button openCameraBtn;
@@ -159,12 +159,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestPermission() {
-        ActivityCompat.requestPermissions(this, REQUEST_PERMISSIONS, REQUST_PERMISSION_CODE);
+        ActivityCompat.requestPermissions(this, REQUEST_PERMISSIONS, REQUEST_PERMISSION_CODE);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUST_PERMISSION_CODE) {
+        if (requestCode == REQUEST_PERMISSION_CODE) {
             if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 openCamera();
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                 useBackCamera().
                 setAutoFocus(true).
                 setPreferPreviewFrameRate(15, 30).
-                setPreferPreviewSize(new Point(640, 480)).
+                setPreferPreviewSize(new Point(640, 480), false).
                 setHandleSurfaceEvent(true).
                 get();
         Log.d(TAG, "config: " + config);

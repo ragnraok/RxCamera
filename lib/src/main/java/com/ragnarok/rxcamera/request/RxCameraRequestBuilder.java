@@ -80,4 +80,12 @@ public class RxCameraRequestBuilder {
     }
 
 
+    /**
+     * the face detection request, after set this, the returned {@link RxCameraData#faceList} will contain the
+     * faces position list
+     * @return
+     */
+    public Observable<RxCameraData> faceDetectionRequest() {
+        return new FaceDetectionRequest(rxCamera).get();
+    }
 }

@@ -213,6 +213,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        camera.request().faceDetectionRequest().subscribe(new Action1<RxCameraData>() {
+            @Override
+            public void call(RxCameraData rxCameraData) {
+                showLog("on face detection: " + rxCameraData.faceList);
+            }
+        });
+
 
     }
 

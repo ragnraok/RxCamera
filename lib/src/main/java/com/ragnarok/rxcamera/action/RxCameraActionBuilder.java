@@ -12,6 +12,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action0;
 
 /**
  * Created by ragnarok on 16/1/9.
@@ -158,5 +159,4 @@ public class RxCameraActionBuilder {
             }
         });
     }
-
 }

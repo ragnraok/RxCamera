@@ -16,6 +16,8 @@ public class RxCameraConfig {
 
     public Point preferPreviewSize = null;
 
+    public boolean acceptSquarePreview = true;
+
     public int minPreferPreviewFrameRate = -1;
 
     public int maxPreferPreviewFrameRate = -1;
@@ -44,6 +46,7 @@ public class RxCameraConfig {
         result.append(String.format("previewBufferSize: %d, ", previewBufferSize));
         result.append(String.format("isHandleSurfaceEvent: %b, ", isHandleSurfaceEvent));
         result.append(String.format("cameraOrien: %d, ", cameraOrien));
+        result.append(String.format("acceptSquarePreview: %s", acceptSquarePreview));
         return result.toString();
     }
 }

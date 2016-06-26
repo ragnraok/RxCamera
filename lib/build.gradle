@@ -10,7 +10,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "0.0.3"
+version = "0.0.4"
 
 repositories {
     jcenter()
@@ -25,7 +25,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 23
         versionCode 1
-        versionName "0.0.2"
+        versionName "0.0.4"
     }
     buildTypes {
         release {

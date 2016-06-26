@@ -11,7 +11,7 @@ repositories {
         jcenter()
 }
 dependencies {
-	compile 'com.ragnarok.rxcamera:lib:0.0.3'
+	compile 'com.ragnarok.rxcamera:lib:0.0.4'
 }
 ```
 
@@ -91,18 +91,29 @@ Usage:
 		camera.request().takePictureRequest(boolean isContinuePreview, Func shutterAction, boolean openFlash)
 		```
 		the encapsulation of [takePicture](http://goo.gl/xhlLbJ) API, if ``isContinuePreview`` set to true, the RxCamera will try to restart preview after capture the picture, otherwise will behave as system ``takePicture`` call, stop preview after captured successfully 
-
+		
 		and the ``shutterAction`` will called after picture just captured, like the [ShutterCallback]
 (http://developer.android.com/intl/es/reference/android/hardware/Camera.ShutterCallback.html) (actually it is called in the system shutterCallback)
 
 		and the ``openFlash`` if set to true, it will open the flash when taking picture, and automatically close it after this request
 		
-	all the data request will return an ``Observalbe<RxCameraData>``
+	- FaceDetectionRequest
+
+		```Java
+		camera.request().faceDetectionRequest()
+		```
+
+		the encapsulation of ``Camera.FaceDetectionListener``, it will return the faces location in  ``CameraData.faceList``
+
+	----	
 	
-	the ``RxCameraData`` contained two fields:
+	All the data request will return an ``Observalbe<RxCameraData>``
+	
+	the ``RxCameraData`` contained these fields:
 	
 	- ``byte[] cameraData``, the raw data of camera, for the takePicture request, it will return the jpeg encode byte, other request just return raw camera preview data, if you don't set preview format, the default is YUV420SP
 	- ``Matrix rotateMatrix``, this matrix help you rotate the camera data in portrait
+	-  ``Camera.Face[] faceList``, the locatoin of faces, only returned in FaceDetectionRequest
 
 5. camera action request
 	

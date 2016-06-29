@@ -95,7 +95,7 @@ public class RxCamera  {
         this.cameraInternal.setConfig(config);
         this.cameraInternal.setContext(context);
         rotateMatrix = new Matrix();
-        rotateMatrix.postRotate(config.cameraOrien, 0.5f, 0.5f);
+        rotateMatrix.postRotate(config.cameraOrientation, 0.5f, 0.5f);
     }
 
     public Matrix getRotateMatrix() {

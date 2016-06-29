@@ -30,7 +30,6 @@ import com.ragnarok.rxcamera.RxCamera;
 import com.ragnarok.rxcamera.RxCameraData;
 import com.ragnarok.rxcamera.config.CameraUtil;
 import com.ragnarok.rxcamera.config.RxCameraConfig;
-import com.ragnarok.rxcamera.config.RxCameraConfigChooser;
 import com.ragnarok.rxcamera.request.Func;
 
 import java.io.File;
@@ -173,13 +172,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openCamera() {
-        RxCameraConfig config = RxCameraConfigChooser.obtain().
-                useBackCamera().
-                setAutoFocus(true).
-                setPreferPreviewFrameRate(15, 30).
-                setPreferPreviewSize(new Point(640, 480), false).
-                setHandleSurfaceEvent(true).
-                get();
+        RxCameraConfig config = new RxCameraConfig.Builder()
+                .useBackCamera()
+                .setAutoFocus(true)
+                .setPreferPreviewFrameRate(15, 30)
+                .setPreferPreviewSize(new Point(640, 480), false)
+                .setHandleSurfaceEvent(true)
+                .build();
         Log.d(TAG, "config: " + config);
         RxCamera.open(this, config).flatMap(new Func1<RxCamera, Observable<RxCamera>>() {
             @Override

@@ -192,11 +192,12 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
         }
 
         // set display orientation
-        if (cameraConfig.displayOrientation == -1) {
-            cameraConfig.displayOrientation = CameraUtil.getPortraitCamearaDisplayOrientation(context, cameraConfig.currentCameraId, cameraConfig.isFaceCamera);
+        int displayOrientation = cameraConfig.displayOrientation;
+        if (displayOrientation == -1) {
+            displayOrientation = CameraUtil.getPortraitCamearaDisplayOrientation(context, cameraConfig.currentCameraId, cameraConfig.isFaceCamera);
         }
         try {
-            camera.setDisplayOrientation(cameraConfig.displayOrientation);
+            camera.setDisplayOrientation(displayOrientation);
         } catch (Exception e) {
             openCameraFailedReason = OpenCameraFailedReason.SET_DISPLAY_ORIENTATION_FAILED;
             openCameraFailedCause = e;

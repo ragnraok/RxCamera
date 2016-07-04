@@ -3,8 +3,8 @@ package com.ragnarok.rxcamera;
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
-import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.os.Build;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -178,6 +178,14 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
                 openCameraFailedReason = OpenCameraFailedReason.SET_AUTO_FOCUS_FAILED;
                 openCameraFailedCause = e;
                 return false;
+            }
+        }
+
+        // set enableShutterSound (only supported for API 17 and newer)
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                && cameraConfig.muteShutterSound) {
+            if (CameraUtil.canDisableShutter(cameraConfig.currentCameraId)) {
+                camera.enableShutterSound(false);
             }
         }
 

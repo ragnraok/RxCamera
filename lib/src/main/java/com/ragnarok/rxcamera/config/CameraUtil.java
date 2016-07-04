@@ -4,8 +4,8 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.os.Build;
 import android.util.Log;
-import android.util.Size;
 import android.view.Surface;
 import android.view.WindowManager;
 
@@ -213,5 +213,16 @@ public class CameraUtil {
             result = center - focusAreaSize / 2;
         }
         return result;
+    }
+
+    public static boolean canDisableShutter(int id) {
+        // cameraInfo.canDisableShutterSound is only available for API 17 and newer
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Camera.CameraInfo cameraInfo = getCameraInfo(id);
+            return cameraInfo != null && cameraInfo.canDisableShutterSound;
+        } else {
+            Log.d(TAG, "SDK does not support disabling shutter sound");
+            return false;
+        }
     }
 }

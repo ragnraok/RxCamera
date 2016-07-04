@@ -75,7 +75,7 @@ public class CameraUtil {
         return backCameraId;
     }
 
-    public static int getPortraitCamearaDisplayOrientation(Context context, int cameraId, boolean isFrontCamera) {
+    public static int getPortraitCameraDisplayOrientation(Context context, int cameraId, boolean isFrontCamera) {
         if (cameraId < 0 || cameraId > getCameraNumber()) {
             return -1;
         }

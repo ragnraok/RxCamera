@@ -116,6 +116,12 @@ public class RxCameraConfig {
         }
 
         public Builder setDisplayOrientation(int displayOrientation) {
+            if (displayOrientation != 0 &&
+                    displayOrientation != 90 &&
+                    displayOrientation != 180 &&
+                    displayOrientation != 270)
+                throw new IllegalArgumentException("display orientation: " +displayOrientation + ". (must be 0, 90, 180, or 270)");
+
             this.displayOrientation = displayOrientation;
             return this;
         }
@@ -156,11 +162,6 @@ public class RxCameraConfig {
 
         public RxCameraConfig build() {
             setProperConfigVal();
-            if (displayOrientation != 0 &&
-                    displayOrientation != 90 &&
-                    displayOrientation != 180 &&
-                    displayOrientation != 270)
-                throw new IllegalArgumentException("display orientation: " +displayOrientation + ". (must be 0, 90, 180, or 270)");
             return new RxCameraConfig(this);
         }
     }

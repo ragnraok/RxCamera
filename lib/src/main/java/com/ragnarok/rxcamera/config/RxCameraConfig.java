@@ -35,6 +35,8 @@ public class RxCameraConfig {
 
     public final int cameraOrientation;
 
+    public final boolean muteShutterSound;
+
     public RxCameraConfig(Builder builder) {
         isFaceCamera = builder.isFaceCamera;
         currentCameraId = builder.currentCameraId;
@@ -48,6 +50,7 @@ public class RxCameraConfig {
         previewBufferSize = builder.previewBufferSize;
         isHandleSurfaceEvent = builder.isHandleSurfaceEvent;
         cameraOrientation = builder.cameraOrientation;
+        muteShutterSound = builder.muteShutterSound;
     }
 
     @Override
@@ -62,7 +65,8 @@ public class RxCameraConfig {
         result.append(String.format("previewBufferSize: %d, ", previewBufferSize));
         result.append(String.format("isHandleSurfaceEvent: %b, ", isHandleSurfaceEvent));
         result.append(String.format("cameraOrientation: %d, ", cameraOrientation));
-        result.append(String.format("acceptSquarePreview: %s", acceptSquarePreview));
+        result.append(String.format("acceptSquarePreview: %s, ", acceptSquarePreview));
+        result.append(String.format("muteShutterSound: %s", muteShutterSound));
         return result.toString();
     }
 
@@ -79,6 +83,7 @@ public class RxCameraConfig {
         private int previewBufferSize = -1;
         private boolean isHandleSurfaceEvent = false;
         private int cameraOrientation = -1;
+        private boolean muteShutterSound = false;
 
         public Builder useFrontCamera() {
             isFaceCamera = true;
@@ -116,6 +121,12 @@ public class RxCameraConfig {
         }
 
         public Builder setDisplayOrientation(int displayOrientation) {
+            if (displayOrientation != 0 &&
+                    displayOrientation != 90 &&
+                    displayOrientation != 180 &&
+                    displayOrientation != 270)
+                throw new IllegalArgumentException("display orientation: " +displayOrientation + ". (must be 0, 90, 180, or 270)");
+
             this.displayOrientation = displayOrientation;
             return this;
         }
@@ -132,6 +143,11 @@ public class RxCameraConfig {
 
         public Builder setPreviewBufferSize(int size) {
             previewBufferSize = size;
+            return this;
+        }
+
+        public Builder setMuteShutterSound(boolean mute){
+            muteShutterSound = mute;
             return this;
         }
 
@@ -156,11 +172,6 @@ public class RxCameraConfig {
 
         public RxCameraConfig build() {
             setProperConfigVal();
-            if (displayOrientation != 0 &&
-                    displayOrientation != 90 &&
-                    displayOrientation != 180 &&
-                    displayOrientation != 270)
-                throw new IllegalArgumentException("display orientation: " +displayOrientation + ". (must be 0, 90, 180, or 270)");
             return new RxCameraConfig(this);
         }
     }

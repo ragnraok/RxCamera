@@ -3,8 +3,8 @@ package com.ragnarok.rxcamera;
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
-import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.os.Build;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -181,6 +181,14 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
             }
         }
 
+        // set enableShutterSound (only supported for API 17 and newer)
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                && cameraConfig.muteShutterSound) {
+            if (CameraUtil.canDisableShutter(cameraConfig.currentCameraId)) {
+                camera.enableShutterSound(false);
+            }
+        }
+
         // set all parameters
         try {
             camera.setParameters(parameters);
@@ -194,7 +202,7 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
         // set display orientation
         int displayOrientation = cameraConfig.displayOrientation;
         if (displayOrientation == -1) {
-            displayOrientation = CameraUtil.getPortraitCamearaDisplayOrientation(context, cameraConfig.currentCameraId, cameraConfig.isFaceCamera);
+            displayOrientation = CameraUtil.getPortraitCameraDisplayOrientation(context, cameraConfig.currentCameraId, cameraConfig.isFaceCamera);
         }
         try {
             camera.setDisplayOrientation(displayOrientation);

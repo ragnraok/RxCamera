@@ -2,6 +2,7 @@ package com.ragnarok.rxcamera.config;
 
 import android.graphics.Point;
 import android.hardware.Camera;
+import android.os.Build;
 
 /**
  * Created by ragnarok on 15/11/1.
@@ -121,6 +122,9 @@ public class RxCameraConfig {
         }
 
         public Builder setDisplayOrientation(int displayOrientation) {
+            if (displayOrientation < 0) {
+                return this;
+            }
             if (displayOrientation != 0 &&
                     displayOrientation != 90 &&
                     displayOrientation != 180 &&
@@ -167,6 +171,23 @@ public class RxCameraConfig {
             if (cameraInfo != null) {
                 cameraOrientation = cameraInfo.orientation;
             }
+            return this;
+        }
+
+        public Builder from(RxCameraConfig config) {
+            if (config.isFaceCamera) {
+                useFrontCamera();
+            } else {
+                useBackCamera();
+            }
+            setPreferPreviewSize(config.preferPreviewSize, config.acceptSquarePreview);
+            setPreferPreviewFrameRate(config.maxPreferPreviewFrameRate, config.minPreferPreviewFrameRate);
+            setPreviewFormat(config.previewFormat);
+            setDisplayOrientation(config.displayOrientation);
+            setAutoFocus(config.isAutoFocus);
+            setHandleSurfaceEvent(config.isHandleSurfaceEvent);
+            setPreviewBufferSize(config.previewBufferSize);
+            setMuteShutterSound(config.muteShutterSound);
             return this;
         }
 

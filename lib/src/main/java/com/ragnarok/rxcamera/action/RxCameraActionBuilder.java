@@ -3,6 +3,7 @@ package com.ragnarok.rxcamera.action;
 import android.hardware.Camera;
 
 import com.ragnarok.rxcamera.RxCamera;
+import com.ragnarok.rxcamera.config.RxCameraConfig;
 import com.ragnarok.rxcamera.error.SettingAreaFocusError;
 import com.ragnarok.rxcamera.error.SettingFlashException;
 import com.ragnarok.rxcamera.error.SettingMeterAreaError;
@@ -13,6 +14,7 @@ import java.util.List;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.functions.Func1;
 
 /**
  * Created by ragnarok on 16/1/9.

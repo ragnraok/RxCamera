@@ -405,6 +405,40 @@ public class RxCameraInternal implements SurfaceCallback.SurfaceListener, Camera
         return true;
     }
 
+    public boolean switchCameraInternal() {
+        if (camera == null) {
+            return false;
+        }
+        try {
+            camera.setPreviewCallback(null);
+            camera.release();
+
+            RxCameraConfig.Builder builder = new RxCameraConfig.Builder();
+            builder.from(getConfig());
+            if (getConfig().isFaceCamera) {
+                builder.useBackCamera();
+            } else {
+                builder.useFrontCamera();
+            }
+            this.cameraConfig = builder.build();
+
+            if (bindSurfaceView != null) {
+                SurfaceView oldSurfaceView = bindSurfaceView;
+                openCameraInternal();
+                bindSurfaceInternal(oldSurfaceView);
+            } else if (bindTextureView != null) {
+                TextureView oldTextureView = bindTextureView;
+                openCameraInternal();
+                bindTextureInternal(oldTextureView);
+            }
+            return startPreviewInternal();
+
+        } catch (Exception e) {
+            Log.e(TAG, "switchCamera error: " + e.getMessage());
+            return false;
+        }
+    }
+
     public void onAvailable() {
         if (isNeedStartPreviewLater) {
             try {

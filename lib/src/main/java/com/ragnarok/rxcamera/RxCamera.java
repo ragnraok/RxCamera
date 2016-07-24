@@ -175,6 +175,16 @@ public class RxCamera  {
         });
     }
 
+    public Observable<Boolean> switchCamera() {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                subscriber.onNext(cameraInternal.switchCameraInternal());
+                subscriber.onCompleted();
+            }
+        });
+    }
+
     /**
      * return a {@link RxCameraRequestBuilder} which you can request the camera preview frame data
      * @return

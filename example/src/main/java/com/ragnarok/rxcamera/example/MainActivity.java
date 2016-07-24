@@ -271,6 +271,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.action_face_detection:
                 faceDetection();
+                break;
+            case R.id.action_switch_camera:
+                switchCamera();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -442,6 +446,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void call(RxCameraData rxCameraData) {
                 showLog("on face detection: " + rxCameraData.faceList);
+            }
+        });
+    }
+
+    private void switchCamera() {
+        if (!checkCamera()) {
+            return;
+        }
+        camera.switchCamera().subscribe(new Action1<Boolean>() {
+            @Override
+            public void call(Boolean aBoolean) {
+                showLog("switch camera result: " + aBoolean);
             }
         });
     }

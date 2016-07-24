@@ -21,4 +21,6 @@
         app:showAsAction="collapseActionView"/>
     <item android:id="@+id/action_face_detection" android:title="@string/action_face_detection"
         app:showAsAction="collapseActionView"/>
+    <item android:id="@+id/action_switch_camera" android:title="@string/action_switch_camera"
+        app:showAsAction="collapseActionView"/>
 </menu>

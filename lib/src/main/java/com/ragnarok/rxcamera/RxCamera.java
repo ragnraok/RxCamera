@@ -175,6 +175,10 @@ public class RxCamera  {
         });
     }
 
+    /**
+     * switch the camera, return an Observable indicated if switch success
+     * @return
+     */
     public Observable<Boolean> switchCamera() {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override

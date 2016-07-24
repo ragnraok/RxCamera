@@ -2,7 +2,6 @@ package com.ragnarok.rxcamera.config;
 
 import android.graphics.Point;
 import android.hardware.Camera;
-import android.os.Build;
 
 /**
  * Created by ragnarok on 15/11/1.

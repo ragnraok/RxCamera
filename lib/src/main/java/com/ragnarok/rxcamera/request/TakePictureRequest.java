@@ -82,12 +82,6 @@ public class TakePictureRequest extends BaseRxCameraRequest {
                     e.printStackTrace();
                 }
 
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 rxCamera.getNativeCamera().takePicture(new Camera.ShutterCallback() {
                     @Override
                     public void onShutter() {

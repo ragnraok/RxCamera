@@ -1,5 +1,7 @@
 # RxCamera
 
+![](https://travis-ci.org/ragnraok/RxCamera.svg?branch=master)
+
 RxJava style camera API for android, it based on [android.hardware.camera](http://developer.android.com/intl/es/reference/android/hardware/Camera.html)
 
 ----

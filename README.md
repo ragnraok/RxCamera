@@ -17,7 +17,7 @@ dependencies {
 
 #### Basic Usage:
 
-1. set the camera parameter by choose a [RxCameraConfig](https://github.com/ragnraok/RxCamera/blob/master/lib/src/main/java/com/ragnarok/rxcamera/config/RxCameraConfig.java), which created by [RxCameraConfigChooser](https://github.com/ragnraok/RxCamera/blob/master/lib/src/main/java/com/ragnarok/rxcamera/config/RxCameraConfigChooser.java):
+1. set the camera parameter by choose a [RxCameraConfig](https://github.com/ragnraok/RxCamera/blob/master/lib/src/main/java/com/ragnarok/rxcamera/config/RxCameraConfig.java), which created by [RxCameraConfig.Builder](https://github.com/ragnraok/RxCamera/blob/master/lib/src/main/java/com/ragnarok/rxcamera/config/RxCameraConfig.java#L73):
 	
 	```Java
 	RxCameraConfig config = new RxCameraConfig.Builder()

@@ -139,7 +139,7 @@ public class TakePictureRequest extends BaseRxCameraRequest {
         int minDiff = Integer.MAX_VALUE;
         Camera.Size bestSize = null;
         for (Camera.Size size : sizeList) {
-            int diff = Math.abs(size.width - width) + Math.abs(size.height);
+            int diff = Math.abs(size.width - width) + Math.abs(size.height - height);
             if (diff < minDiff) {
                 minDiff = diff;
                 bestSize = size;
